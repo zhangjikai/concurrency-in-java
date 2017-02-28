@@ -13,7 +13,7 @@ git add -A .
 git commit -m "update"
 git push
 git checkout master
-rsync -av --exclude='_book' --exclude='.git' --exclude='node_modules' -exclude='README.md' /e/source/git/gitbook/zhangjk/concurrency-in-java/ /e/source/git/github/concurrency-in-java/
+rsync -av --exclude='_book' --exclude='.git' --exclude='node_modules' -exclude='README.md' /e/source/git/gitbook/zhangjk/concurrency-in-java/ .
 git add -A .
 git commit -m "update"
 git push
