@@ -1,4 +1,6 @@
 #!/bin/sh
+git add .
+git commit -m "update"
 cd /e/source/git/github/concurrency-in-java
 git checkout master
 git pull
