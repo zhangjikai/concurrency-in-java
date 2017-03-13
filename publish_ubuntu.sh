@@ -4,8 +4,6 @@ git commit -m "update"
 cd /home/zhangjikai/文档/source_new/git/github/concurrency-in-java
 git checkout master
 git pull
-git add -A .
-git commit -m "update"
 git checkout gh-pages
 git pull
 cd /home/zhangjikai/GitBook/Library/zhangjk/concurrency-in-java
