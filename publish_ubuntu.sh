@@ -13,7 +13,6 @@ cd /home/zhangjikai/GitBook/Library/zhangjk/concurrency-in-java
 gitbook build
 yes | cp -rf /home/zhangjikai/GitBook/Library/zhangjk/concurrency-in-java/_book/* /home/zhangjikai/文档/source_new/git/github/concurrency-in-java/
 cd /home/zhangjikai/文档/source_new/git/github/concurrency-in-java
-git checkout gh-pages
 git add -A .
 git commit -m "update"
 git push
