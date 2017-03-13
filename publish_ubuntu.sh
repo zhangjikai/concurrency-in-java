@@ -3,6 +3,8 @@ git add .
 git commit -m "update"
 cd /home/zhangjikai/文档/source_new/git/github/concurrency-in-java
 git checkout master
+git add -A .
+git commit -m "update"
 git pull
 git checkout gh-pages
 git pull
