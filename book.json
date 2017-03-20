@@ -45,7 +45,7 @@
             "theme": "default"
         },
         "github": {
-            "url": "https://github.com/zhangjikai/gitbook-use"
+            "url": "https://github.com/zhangjikai/concurrency-in-java"
         },
         "sharing": {
             "weibo": true,
@@ -78,11 +78,11 @@
             "skipFirstH1": true
         },
         "edit-link": {
-            "base": "https://github.com/zhangjikai/gitbook-use/edit/master",
+            "base": "https://github.com/zhangjikai/concurrency-in-java/edit/master",
             "label": "Edit This Page"
         },
         "sitemap-general": {
-            "prefix": "http://gitbook.zhangjikai.com"
+            "prefix": "http://con.zhangjikai.com"
         },
         "anchor-navigation-ex": {
             "isRewritePageTitle": false,

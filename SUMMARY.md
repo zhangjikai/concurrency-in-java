@@ -1,5 +1,4 @@
 # Summary
 
 * [前言](README.md)
-* [线程](ji-chu.md)
-
+* [多线程](多线程.md)
