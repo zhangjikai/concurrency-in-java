@@ -1,7 +1,5 @@
 # ThreadLocal 模式
-
-
-
+## 前言
 在多线程环境下，之所以会有并发问题，就是因为不同的线程会同时访问同一个共享变量，例如下面的形式
 ```java
 public class MultiThreadDemo {
