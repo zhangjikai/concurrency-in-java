@@ -280,13 +280,13 @@ static class Entry extends WeakReference <ThreadLocal <?>> {
     /** The value associated with this ThreadLocal. */
     Object value;
 
-    Entry(ThreadLocal < ? > k, Object v) {
+    Entry(ThreadLocal <?> k, Object v) {
         super(k);
         value = v;
     }
 }
 ```
-Entry 类实际上就是要保存的副本对象包装了一下，需要注意的是 Entry 类继承了 `WeakReference`，标明指向该类的引用都是弱引用，关于弱引用，我们稍后再说，
+Entry 类实际上就是要保存的副本对象包装了一下，需要注意的是 Entry 类中 ThreadLocal 是一个弱引用，关于弱引用后面再说。
 
 * http://www.iteye.com/topic/103804
 * http://www.jianshu.com/p/529c03d9b67e
