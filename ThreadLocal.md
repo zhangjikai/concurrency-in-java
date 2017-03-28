@@ -225,7 +225,7 @@ public class SimpleImpl2 {
 ```
 在上面的实现中，当线程消亡之后，线程中 cacheMap 也会被回收，它当中存放的副本变量也会被全部回收，并且 cacheMap 是线程私有的，不会出现多个线程同时访问一个 cacheMap 的情况。在 Java 中，ThreadLocal 类的实现就是采用的这种思想，注意只是思想，实际的实现和上面的并不一样。
 
-## 使用 ThreadLocal 的示例
+## 示例
 Java 使用 ThreadLocal 类来实现线程局部变量模式，ThreadLocal 使用 set 和 get 方法设置和获取变量，下面是函数原型：
 ```java
 public void set(T value);
@@ -268,9 +268,29 @@ Thread-1: threadLocal=69, value=15
 ```
 我们看到虽然 `threadLocal` 是静态变量，但是每个线程都有自己的值，不会受到其他线程的影响。
 
-##
+## 实现
+ThreadLocal 的实现思想，我们在前面已经说了，每个线程维护一个 ThreadLocalMap 的映射表，映射表的 key 是 ThreadLocal 实例本身，value 是要存储的副本变量，如下图所示：
+
+![](images/thread-local.png)
+> 图片来自 http://www.cnblogs.com/f1194361820/p/5571199.html#threadLocal_memory_model
+
+下面看一下 JDK 中如何实现的 ThreadLocal。首先看一下 Thread 存储 ThreadLocal 变量的结构。在 Thread 类中使用一个 ThreadLocalMap 类型的变量来存放 ThreadLocal 变量，ThreadLocalMap 中使用一个 Entry 数组来存放数据，数据在数组中的索引就是传入的 key 值。Entry 类的定义如下所示：
+```java
+static class Entry extends WeakReference <ThreadLocal <?>> {
+    /** The value associated with this ThreadLocal. */
+    Object value;
+
+    Entry(ThreadLocal < ? > k, Object v) {
+        super(k);
+        value = v;
+    }
+}
+```
+Entry 类实际上就是要保存的副本对象包装了一下，需要注意的是 Entry 类继承了 `WeakReference`，标明指向该类的引用都是弱引用，关于弱引用，我们稍后再说，
 
 * http://www.iteye.com/topic/103804
 * http://www.jianshu.com/p/529c03d9b67e
 * http://stackoverflow.com/questions/38994306/what-is-the-meaning-of-0x61c88647-constant-in-threadlocal-java
 * http://jerrypeng.me/2013/06/thread-local-and-magical-0x61c88647/
+* [ThreadLocal是否会引发内存泄露的分析（转）](http://www.cnblogs.com/softidea/p/4819866.html)
+* [[Java并发包学习七]解密ThreadLocal](http://qifuguang.me/2015/09/02/[Java%E5%B9%B6%E5%8F%91%E5%8C%85%E5%AD%A6%E4%B9%A0%E4%B8%83]%E8%A7%A3%E5%AF%86ThreadLocal/)
