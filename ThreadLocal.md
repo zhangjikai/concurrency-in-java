@@ -274,7 +274,18 @@ ThreadLocal 的实现思想，我们在前面已经说了，每个线程维护�
 ![](images/thread-local.png)
 > 图片来自 http://www.cnblogs.com/f1194361820/p/5571199.html#threadLocal_memory_model
 
-下面看一下 JDK 中如何实现的 ThreadLocal。首先看一下 Thread 存储 ThreadLocal 变量的结构。在 Thread 类中使用一个 ThreadLocalMap 类型的变量来存放 ThreadLocal 变量，ThreadLocalMap 中使用一个 Entry 数组来存放数据，数据在数组中的索引就是传入的 key 值。Entry 类的定义如下所示：
+下面看一下 JDK 中如何实现的 ThreadLocal。
+### ThreadLocalMap
+线程使用 ThreadLocalMap 来存储副本变量，ThreadLocalMap 也是采用的散列表（Hash）思想来实现的，但是实现方式和 HashMap 中的不太一样。我们首先看下散列表的相关知识：
+#### 散列表
+理想状态下，散列表就是一个包含关键字的固定大小的数组
+
+
+
+首先看一下存储变量副本的 Map 实现，对应的类为 ThreadLocalMap，它是 ThreadLocal 里的一个静态内部类。
+
+
+首先看一下 Thread 存储 ThreadLocal 变量的结构。在 Thread 类中使用一个 ThreadLocalMap 类型的变量来存放 ThreadLocal 变量，ThreadLocalMap 中使用一个 Entry 数组来存放数据，数据在数组中的索引就是传入的 key 值。Entry 类的定义如下所示：
 ```java
 static class Entry extends WeakReference <ThreadLocal <?>> {
     /** The value associated with this ThreadLocal. */
@@ -286,7 +297,7 @@ static class Entry extends WeakReference <ThreadLocal <?>> {
     }
 }
 ```
-Entry 类实际上就是要保存的副本对象包装了一下，需要注意的是 Entry 类中 ThreadLocal 是一个弱引用，关于弱引用后面再说。
+Entry 类实际上就是要保存的副本对象包装了一下，需要注意的是 Entry 类中的 ThreadLocal 是一个弱引用，关于弱引用后面再说。作为一个 Map，核心函数就是 put 和 get，
 
 * http://www.iteye.com/topic/103804
 * http://www.jianshu.com/p/529c03d9b67e
@@ -294,3 +305,4 @@ Entry 类实际上就是要保存的副本对象包装了一下，需要注意�
 * http://jerrypeng.me/2013/06/thread-local-and-magical-0x61c88647/
 * [ThreadLocal是否会引发内存泄露的分析（转）](http://www.cnblogs.com/softidea/p/4819866.html)
 * [[Java并发包学习七]解密ThreadLocal](http://qifuguang.me/2015/09/02/[Java%E5%B9%B6%E5%8F%91%E5%8C%85%E5%AD%A6%E4%B9%A0%E4%B8%83]%E8%A7%A3%E5%AF%86ThreadLocal/)
+* [数据结构与算法分析: C语法描述](https://github.com/Bzhnja/ebooks/blob/master/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90%EF%BC%9AC%E8%AF%AD%E8%A8%80%E6%8F%8F%E8%BF%B0_%E5%8E%9F%E4%B9%A6%E7%AC%AC2%E7%89%88_%E9%AB%98%E6%B8%85%E7%89%88.pdf)
