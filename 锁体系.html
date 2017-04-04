@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>前言 · Java 并发编程</title>
+        <title>Lock · Java 并发编程</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.2">
@@ -72,8 +72,8 @@
     <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="并发基础.html" />
     
+    <link rel="prev" href="锁.html" />
     
 
     
@@ -120,7 +120,7 @@
         
         
     
-        <li class="chapter active" data-level="1.1" data-path="./">
+        <li class="chapter " data-level="1.1" data-path="./">
             
                 <a href="./">
             
@@ -202,7 +202,7 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.3.1" data-path="锁体系.html">
+        <li class="chapter active" data-level="1.3.1" data-path="锁体系.html">
             
                 <a href="锁体系.html">
             
@@ -252,7 +252,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href="." >前言</a>
+        <a href="." >Lock</a>
     </h1>
 </div>
 
@@ -267,17 +267,11 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <div id="anchor-navigation-ex-navbar"><i class="fa fa-anchor"></i><ul><li><a href="#java-&#x5E76;&#x53D1;&#x7F16;&#x7A0B;&#x5B66;&#x4E60;&#x7B14;&#x8BB0;">Java &#x5E76;&#x53D1;&#x7F16;&#x7A0B;&#x5B66;&#x4E60;&#x7B14;&#x8BB0;</a></li></ul></div><a href="#java-&#x5E76;&#x53D1;&#x7F16;&#x7A0B;&#x5B66;&#x4E60;&#x7B14;&#x8BB0;" id="anchorNavigationExGoTop"><i class="fa fa-arrow-up"></i></a><h1 id="java-&#x5E76;&#x53D1;&#x7F16;&#x7A0B;&#x5B66;&#x4E60;&#x7B14;&#x8BB0;"><a name="java-&#x5E76;&#x53D1;&#x7F16;&#x7A0B;&#x5B66;&#x4E60;&#x7B14;&#x8BB0;" class="anchor-navigation-ex-anchor" href="#java-&#x5E76;&#x53D1;&#x7F16;&#x7A0B;&#x5B66;&#x4E60;&#x7B14;&#x8BB0;"><i class="fa fa-link" aria-hidden="true"></i></a>Java &#x5E76;&#x53D1;&#x7F16;&#x7A0B;&#x5B66;&#x4E60;&#x7B14;&#x8BB0;</h1>
-<p>&#x53C2;&#x8003;&#x8D44;&#x6599;:</p>
+                                <div id="anchor-navigation-ex-navbar"><i class="fa fa-anchor"></i><ul><li><a href="#&#x9501;&#x4F53;&#x7CFB;">&#x9501;&#x4F53;&#x7CFB;</a></li><ul><li><a href="#&#x53C2;&#x8003;&#x8D44;&#x6599;">&#x53C2;&#x8003;&#x8D44;&#x6599;</a></li></ul></ul></div><a href="#&#x9501;&#x4F53;&#x7CFB;" id="anchorNavigationExGoTop"><i class="fa fa-arrow-up"></i></a><h1 id="&#x9501;&#x4F53;&#x7CFB;"><a name="&#x9501;&#x4F53;&#x7CFB;" class="anchor-navigation-ex-anchor" href="#&#x9501;&#x4F53;&#x7CFB;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x9501;&#x4F53;&#x7CFB;</h1>
+<h2 id="&#x53C2;&#x8003;&#x8D44;&#x6599;"><a name="&#x53C2;&#x8003;&#x8D44;&#x6599;" class="anchor-navigation-ex-anchor" href="#&#x53C2;&#x8003;&#x8D44;&#x6599;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x53C2;&#x8003;&#x8D44;&#x6599;</h2>
 <ul>
-<li>Java &#x5E76;&#x53D1;&#x7F16;&#x7A0B;&#x5B9E;&#x6218;</li>
-<li>Java &#x5E76;&#x53D1;&#x7F16;&#x7A0B;&#x7684;&#x827A;&#x672F;</li>
-<li><a href="http://ifeve.com/java-concurrency-thread-directory/" target="_blank">Java&#x5E76;&#x53D1;&#x6027;&#x548C;&#x591A;&#x7EBF;&#x7A0B;</a></li>
-<li><a href="https://docs.oracle.com/javase/tutorial/essential/concurrency/procthread.html" target="_blank">The Java&#x2122; Tutorials</a></li>
-</ul>
-<p>&#x8BF4;&#x660E;</p>
-<ul>
-<li>&#x4F7F;&#x7528;&#x7684; JDK &#x7248;&#x672C;&#x4E3A; <code>1.8.0_111</code></li>
+<li><a href="http://blog.csdn.net/justloveyou_/article/details/54972105" target="_blank">Java &#x5E76;&#x53D1;&#xFF1A;Lock &#x6846;&#x67B6;&#x8BE6;&#x89E3;</a></li>
+<li><a href="http://cs.lmu.edu/~ray/notes/javathreading/" target="_blank">Java Threads</a></li>
 </ul>
 
                                 
@@ -306,10 +300,10 @@
 
             
                 
-                
-                <a href="并发基础.html" class="navigation navigation-next navigation-unique" aria-label="Next page: 并发编程基础">
-                    <i class="fa fa-angle-right"></i>
+                <a href="锁.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page: 显式锁">
+                    <i class="fa fa-angle-left"></i>
                 </a>
+                
                 
             
         
@@ -318,7 +312,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"前言","level":"1.1","depth":1,"next":{"title":"并发编程基础","level":"1.2","depth":1,"path":"并发基础.md","ref":"并发基础.md","articles":[{"title":"线程","level":"1.2.1","depth":2,"path":"线程.md","ref":"线程.md","articles":[]},{"title":"ThreadLocal","level":"1.2.2","depth":2,"path":"ThreadLocal.md","ref":"ThreadLocal.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["-lunr","-search","-highlight","-livereload","search-plus@^0.0.11","simple-page-toc@^0.1.1","github@^2.0.0","edit-link@^2.0.2","prism@^2.1.0","prism-themes@^0.0.2","anchors@^0.7.1","expandable-chapters-small@^0.1.7","duoshuo","3-ba","sitemap-general@^0.1.1","anchor-navigation-ex@0.1.8","favicon@^0.0.2","3-ba@^0.9.0"],"root":".","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prism-themes/themes/prism-base16-ateliersulphurpool.light.css"]},"github":{"url":"https://github.com/zhangjikai/concurrency-in-java"},"simple-page-toc":{"maxDepth":4,"skipFirstH1":true},"duoshuo":{"short_name":"zhangjkblog","theme":"default"},"donate":{"wechat":"https://zhangjikai.com/resource/weixin.png","alipay":"https://zhangjikai.com/resource/alipay.png","title":"","button":"赏","alipayText":"支付宝打赏","wechatText":"微信打赏"},"sitemap-general":{"prefix":"http://con.zhangjikai.com"},"fontsettings":{"theme":"white","family":"sans","size":2},"anchor-navigation-ex":{"isRewritePageTitle":false,"tocLevel1Icon":"fa fa-hand-o-right","tocLevel2Icon":"fa fa-hand-o-right","tocLevel3Icon":"fa fa-hand-o-right"},"favicon":{"shortcut":"favicon.ico","bookmark":"favicon.ico"},"prism-themes":{},"3-ba":{"configuration":"auto","token":"ff100361cdce95dd4c8fb96b4009f7bc"},"expandable-chapters-small":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":true,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"label":"Edit This Page","base":"https://github.com/zhangjikai/concurrency-in-java/edit/master"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true},"anchors":{},"search-plus":{}},"theme":"default","author":"zhangjikai","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Java 并发编程","language":"zh-hans","output.name":"site","links":{"sidebar":{"Home":"http://www.zhangjikai.com"}},"gitbook":"3.2.2","description":"Java 并发编程学习笔记"},"file":{"path":"README.md","mtime":"2017-03-23T09:08:14.216Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-04-04T13:22:51.077Z"},"basePath":".","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Lock","level":"1.3.1","depth":2,"previous":{"title":"显式锁","level":"1.3","depth":1,"path":"锁.md","ref":"锁.md","articles":[{"title":"Lock","level":"1.3.1","depth":2,"path":"锁体系.md","ref":"锁体系.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["-lunr","-search","-highlight","-livereload","search-plus@^0.0.11","simple-page-toc@^0.1.1","github@^2.0.0","edit-link@^2.0.2","prism@^2.1.0","prism-themes@^0.0.2","anchors@^0.7.1","expandable-chapters-small@^0.1.7","duoshuo","3-ba","sitemap-general@^0.1.1","anchor-navigation-ex@0.1.8","favicon@^0.0.2","3-ba@^0.9.0"],"root":".","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prism-themes/themes/prism-base16-ateliersulphurpool.light.css"]},"github":{"url":"https://github.com/zhangjikai/concurrency-in-java"},"simple-page-toc":{"maxDepth":4,"skipFirstH1":true},"duoshuo":{"short_name":"zhangjkblog","theme":"default"},"donate":{"wechat":"https://zhangjikai.com/resource/weixin.png","alipay":"https://zhangjikai.com/resource/alipay.png","title":"","button":"赏","alipayText":"支付宝打赏","wechatText":"微信打赏"},"sitemap-general":{"prefix":"http://con.zhangjikai.com"},"fontsettings":{"theme":"white","family":"sans","size":2},"anchor-navigation-ex":{"isRewritePageTitle":false,"tocLevel1Icon":"fa fa-hand-o-right","tocLevel2Icon":"fa fa-hand-o-right","tocLevel3Icon":"fa fa-hand-o-right"},"favicon":{"shortcut":"favicon.ico","bookmark":"favicon.ico"},"prism-themes":{},"3-ba":{"configuration":"auto","token":"ff100361cdce95dd4c8fb96b4009f7bc"},"expandable-chapters-small":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":true,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"label":"Edit This Page","base":"https://github.com/zhangjikai/concurrency-in-java/edit/master"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true},"anchors":{},"search-plus":{}},"theme":"default","author":"zhangjikai","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Java 并发编程","language":"zh-hans","output.name":"site","links":{"sidebar":{"Home":"http://www.zhangjikai.com"}},"gitbook":"3.2.2","description":"Java 并发编程学习笔记"},"file":{"path":"锁体系.md","mtime":"2017-04-04T13:22:32.582Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-04-04T13:22:51.077Z"},"basePath":".","book":{"language":""}});
         });
     </script>
 </div>
