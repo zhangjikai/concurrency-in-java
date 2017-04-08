@@ -93,19 +93,18 @@ unsafe.compareAndSwapInt(this, offset, previous, previous + 1);
 /**
  * Report the location of a given static field, in conjunction with {@link
  * #staticFieldBase}.
- * <p>Do not expect to perform any sort of arithmetic on this offset;
+ * Do not expect to perform any sort of arithmetic on this offset;
  * it is just a cookie which is passed to the unsafe heap memory accessors.
  *
- * <p>Any given field will always have the same offset, and no two distinct
+ * Any given field will always have the same offset, and no two distinct
  * fields of the same class will ever have the same offset.
  *
- * <p>As of 1.4.1, offsets for fields are represented as long values,
+ * As of 1.4.1, offsets for fields are represented as long values,
  * although the Sun JVM does not use the most significant 32 bits.
  * It is hard to imagine a JVM technology which needs more than
  * a few bits to encode an offset within a non-array object,
  * However, for consistency with other methods in this class,
  * this method reports its result as a long value.
- * @see #getInt(Object, long)
  */
 public native long objectFieldOffset(Field f);
 ```
