@@ -4,6 +4,6 @@
 <url> <loc>http://con.zhangjikai.com/并发基础.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>http://con.zhangjikai.com/线程.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>http://con.zhangjikai.com/ThreadLocal.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
-<url> <loc>http://con.zhangjikai.com/锁.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
-<url> <loc>http://con.zhangjikai.com/锁体系.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>http://con.zhangjikai.com/显式锁.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>http://con.zhangjikai.com/Lock框架.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 </urlset>
