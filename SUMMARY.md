@@ -6,3 +6,4 @@
   * [ThreadLocal](ThreadLocal.md)
 * [显式锁](显式锁.md)
   * [Lock 框架](Lock框架.md)
+  * [AbstractQueuedSynchronizer](AbstractQueuedSynchronizer.md)
