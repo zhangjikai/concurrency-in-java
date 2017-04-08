@@ -92,4 +92,24 @@ unsafe.compareAndSwapInt(this, offset, previous, previous + 1);
 ```
 在没有线程竞争的条件下，该代码执行的结果是将 count 变量的值加 1（多个线程竞争可能会有线程执行失败），但是在 compareAndSwapInt 函数中，我们并没有传入 count 变量，那么函数是如何修改 count 变量值的呢？其实我们往 compareAndSwapInt 函数中传入了 count 变量在堆内存中的地址，函数直接修改了 count 变量所在内存区域。count 属性在堆内存中的地址是由 CASIntTest 实例的起始内存地址和 count 属性相对于起始内存的偏移量决定的。其中对象属性在对象中的偏移量通过 `objectFieldOffset` 函数获得，函数原型如下所示。该函数接受一个 Filed 类型的参数，返回该 Filed 属性在对象中的偏移量。
 
+```java
+/**
+ * Report the location of a given static field, in conjunction with {@link
+ * #staticFieldBase}.
+ * Do not expect to perform any sort of arithmetic on this offset;
+ * it is just a cookie which is passed to the unsafe heap memory accessors.
+ *
+ * Any given field will always have the same offset, and no two distinct
+ * fields of the same class will ever have the same offset.
+ *
+ * As of 1.4.1, offsets for fields are represented as long values,
+ * although the Sun JVM does not use the most significant 32 bits.
+ * It is hard to imagine a JVM technology which needs more than
+ * a few bits to encode an offset within a non-array object,
+ * However, for consistency with other methods in this class,
+ * this method reports its result as a long value.
+ */
+public native long objectFieldOffset(Field f);
+```
+
 <!--email_off-->
