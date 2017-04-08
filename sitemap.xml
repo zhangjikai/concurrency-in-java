@@ -6,4 +6,5 @@
 <url> <loc>http://con.zhangjikai.com/ThreadLocal.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>http://con.zhangjikai.com/显式锁.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>http://con.zhangjikai.com/Lock框架.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>http://con.zhangjikai.com/AbstractQueuedSynchronizer.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 </urlset>
