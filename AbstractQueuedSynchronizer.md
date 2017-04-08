@@ -108,7 +108,9 @@ unsafe.compareAndSwapInt(this, offset, previous, previous + 1);
  */
 public native long objectFieldOffset(Field f);
 ```
+
 下面我们再看一下 compareAndSwapInt 的函数原型。我们知道 CAS 操作需要知道 3 个信息：内存中的值，期望的旧值以及要修改的新值。通过前面的分析，我们知道通过 o 和 offset 我们可以确定属性在内存中的地址，也就是知道了属性在内存中的值。expected 对应期望的旧址，而 x 就是要修改的新值。
+
 ```java
 public final native boolean compareAndSwapInt(Object o, long offset, int expected, int x);
 ```
@@ -119,6 +121,7 @@ while (!unsafe.compareAndSwapLong(this, offset, before, before + 1)) {
     before = counter;
 }
 ```
+
 下面是使用 CAS 函数实现计数器的一个实例：
 ```java
 import sun.misc.Unsafe;
@@ -195,9 +198,12 @@ public class CASCounter {
 }
 ```
 
+## 同步队列
+同步器依赖内部的同步队列（一个 FIFO）的双向队列来完成同步状态的管理
 
 
 ## 参考文章
+
 * [Java 并发编程的艺术](http://download.csdn.net/detail/u011898232/9548575)
 * [Java Magic. Part 4: sun.misc.Unsafe](http://ifeve.com/sun-misc-unsafe/)
 * [Java里的CompareAndSet(CAS)](http://www.blogjava.net/mstar/archive/2013/04/24/398351.html)
