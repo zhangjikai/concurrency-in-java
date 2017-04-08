@@ -204,5 +204,10 @@ public class CASCounter {
 ## 同步队列
 同步器依赖内部的同步队列（一个 FIFO）的双向队列来完成同步状态的管理
 
+## 参考文章
+
+* [Java 并发编程的艺术](http://download.csdn.net/detail/u011898232/9548575)
+* [Java Magic. Part 4: sun.misc.Unsafe](http://ifeve.com/sun-misc-unsafe/)
+* [Java里的CompareAndSet(CAS)](http://www.blogjava.net/mstar/archive/2013/04/24/398351.html)
 
 <!--email_off-->
