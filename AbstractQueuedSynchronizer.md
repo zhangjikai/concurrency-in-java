@@ -37,5 +37,59 @@ public final native boolean compareAndSwapInt(Object o, long offset, int expecte
  */
 public final native boolean compareAndSwapLong(Object o, long offset, long expected, long x);
 ```
+上面三个函数定义在 sun.misc.Unsafe 类中，使用该类可以进行一些底层的操作，例如直接操作原生内存，更多关于 Unsafe 类的文章可以参考 [这篇](http://ifeve.com/sun-misc-unsafe/)。以 compareAndSwapInt 为例，我们看下如何使用 CAS 函数：
+```java
+import sun.misc.Unsafe;
+
+import java.lang.reflect.Field;
+
+/**
+ * Created by Jikai Zhang on 2017/4/8.
+ */
+public class CASIntTest {
+    private volatile int count = 0;
+
+    private static final Unsafe unsafe = getUnsafe();
+    private static final long offset;
+
+    // 获得 count 属性在 CASIntTest 中的偏移量（内存地址偏移）
+    static {
+        try {
+            offset = unsafe.objectFieldOffset(CASIntTest.class.getDeclaredField("count"));
+        } catch (NoSuchFieldException e) {
+            throw new Error(e);
+        }
+    }
+    // 通过反射的方式获得 Unsafe 类
+    public static Unsafe getUnsafe() {
+        Unsafe unsafe = null;
+        try {
+            Field theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");
+            theUnsafe.setAccessible(true);
+            unsafe = (Unsafe) theUnsafe.get(null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return unsafe;
+    }
+
+    public void increment() {
+        int previous = count;
+        unsafe.compareAndSwapInt(this, offset, previous, previous + 1);
+    }
+
+    public static void main(String[] args) {
+        CASIntTest casIntTest = new CASIntTest();
+        casIntTest.increment();
+        System.out.println(casIntTest.count);
+    }
+}
+```
+在 CASIntTest 类中，我们定义一个 count 变量，其中 `increment()` 方法是将 count 的值加 1，执行上面的程序，我们会看到输出结果也为 1。下面是将 count 加 1 的代码：
+```java
+int previous = count;
+unsafe.compareAndSwapInt(this, offset, previous, previous + 1);
+```
+在没有线程竞争的条件下，该代码执行的结果是将 count 变量的值加 1（多个线程竞争可能会有线程执行失败），但是在 compareAndSwapInt 函数中，我们并没有传入 count 变量，那么函数是如何修改 count 变量值的呢？其实我们往 compareAndSwapInt 函数中传入了 count 变量在堆内存中的地址，函数直接修改了 count 变量所在内存区域。count 属性在堆内存中的地址是由 CASIntTest 实例的起始内存地址和 count 属性相对于起始内存的偏移量决定的。其中对象属性在对象中的偏移量通过 `objectFieldOffset` 函数获得，函数原型如下所示。该函数接受一个 Filed 类型的参数，返回该 Filed 属性在对象中的偏移量。
 
 <!--email_off-->
