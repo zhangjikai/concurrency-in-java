@@ -1,4 +1,5 @@
 # 队列同步器
+<!--email_off-->
 
 ## 前言
 队列同步器 AbstractQueuedSynchronizer（以下简称 AQS），是用来构建锁或者其他同步组件的基础框架。它使用一个 int 成员变量来表示同步状态，通过 CAS 操作对同步状态进行修改，确保状态的改变是安全的。通过内置的 FIFO （First In First Out）队列来完成资源获取线程的排队工作。
@@ -205,3 +206,5 @@ public class CASCounter {
 * [Java 并发编程的艺术](http://download.csdn.net/detail/u011898232/9548575)
 * [Java Magic. Part 4: sun.misc.Unsafe](http://ifeve.com/sun-misc-unsafe/)
 * [Java里的CompareAndSet(CAS)](http://www.blogjava.net/mstar/archive/2013/04/24/398351.html)
+
+<!--email_off-->
