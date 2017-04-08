@@ -112,4 +112,97 @@ unsafe.compareAndSwapInt(this, offset, previous, previous + 1);
 public native long objectFieldOffset(Field f);
 ```
 
+下面我们再看一下 compareAndSwapInt 的函数原型。我们知道 CAS 操作需要知道 3 个信息：内存中的值，期望的旧值以及要修改的新值。通过前面的分析，我们知道通过 o 和 offset 我们可以确定属性在内存中的地址，也就是知道了属性在内存中的值。expected 对应期望的旧址，而 x 就是要修改的新值。
+
+```java
+public final native boolean compareAndSwapInt(Object o, long offset, int expected, int x);
+```
+compareAndSwapInt 函数首先比较一下 expected 是否和内存中的值相同，如果不同证明其他线程修改了属性值，那么就不会执行更新操作，但是程序如果就此返回了，似乎不太符合我们的期望，我们是希望程序可以执行更新操作的，如果其他线程先进行了更新，那么就在更新后的值的基础上进行修改，所以我们一般使用循环配合 CAS 函数，使程序在更新操作完成之后再返回，如下所示：
+```java
+long before = counter;
+while (!unsafe.compareAndSwapLong(this, offset, before, before + 1)) {
+    before = counter;
+}
+```
+
+下面是使用 CAS 函数实现计数器的一个实例：
+```java
+import sun.misc.Unsafe;
+
+import java.lang.reflect.Field;
+
+/**
+ * Created by Jikai Zhang on 2017/4/8.
+ */
+public class CASCounter {
+
+    // 通过反射的方式获得 Unsafe 类
+    public static Unsafe getUnsafe() {
+        Unsafe unsafe = null;
+        try {
+            Field theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");
+            theUnsafe.setAccessible(true);
+            unsafe = (Unsafe) theUnsafe.get(null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return unsafe;
+    }
+
+    private volatile long counter = 0;
+    private static final long offset;
+    private static final Unsafe unsafe = getUnsafe();
+
+    static {
+        try {
+            offset = unsafe.objectFieldOffset(CASCounter.class.getDeclaredField("counter"));
+        } catch (NoSuchFieldException e) {
+            throw new Error(e);
+        }
+    }
+
+    public void increment() {
+        long before = counter;
+        while (!unsafe.compareAndSwapLong(this, offset, before, before + 1)) {
+            before = counter;
+        }
+    }
+
+    public long getCounter() {
+        return counter;
+    }
+
+    private static long intCounter = 0;
+
+    public static void main(String[] args) throws InterruptedException {
+        int threadCount = 10;
+        Thread threads[] = new Thread[threadCount];
+        final CASCounter casCounter = new CASCounter();
+
+        for (int i = 0; i < threadCount; i++) {
+            threads[i] = new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    for (int i = 0; i < 10000; i++) {
+                        casCounter.increment();
+                        intCounter++;
+                    }
+                }
+            });
+            threads[i].start();
+        }
+
+        for(int i = 0; i < threadCount; i++) {
+            threads[i].join();
+        }
+        System.out.printf("CASCounter is %d \nintCounter is %d\n", casCounter.getCounter(), intCounter);
+    }
+}
+```
+
+## 同步队列
+同步器依赖内部的同步队列（一个 FIFO）的双向队列来完成同步状态的管理
+
+
 <!--email_off-->
