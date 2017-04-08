@@ -202,6 +202,7 @@ public class CASCounter {
 ```
 
 ## 同步队列
+* [深入JVM锁机制2-Lock](http://blog.csdn.net/chen77716/article/details/6641477)
 同步器依赖内部的同步队列（一个 FIFO）的双向队列来完成同步状态的管理，当前线程获取同步状态失败时，同步器会将当前线程以及等待状态等信息构造成一个节点（Node）并将其加入同步队列，同时会阻塞当前线程，当同步状态释放时，会把首节点中的线程唤醒，使其再次尝试获取同步状态。
 
 ## 参考文章
@@ -209,5 +210,6 @@ public class CASCounter {
 * [Java 并发编程的艺术](http://download.csdn.net/detail/u011898232/9548575)
 * [Java Magic. Part 4: sun.misc.Unsafe](http://ifeve.com/sun-misc-unsafe/)
 * [Java里的CompareAndSet(CAS)](http://www.blogjava.net/mstar/archive/2013/04/24/398351.html)
+
 
 <!--email_off-->
