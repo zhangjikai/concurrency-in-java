@@ -379,9 +379,320 @@
 </tr>
 </tbody>
 </table>
-<p>&#x81EA;&#x5B9A;&#x4E49;&#x7EC4;&#x4EF6;&#x901A;&#x8FC7;&#x4F7F;&#x7528;&#x4F7F;&#x7528;&#x540C;&#x6B65;&#x5668;&#x63D0;&#x4F9B;&#x7684;&#x6A21;&#x677F;&#x65B9;&#x6CD5;&#x6765;&#x5B9E;&#x73B0;&#x81EA;&#x5DF1;&#x7684;&#x540C;&#x6B65;&#x8BED;&#x4E49;&#x3002;</p>
-<p>AQS &#x7684;&#x4E3B;&#x8981;&#x4F7F;&#x7528;&#x65B9;&#x5F0F;&#x662F;&#x7EE7;&#x627F;&#xFF0C;&#x5B50;&#x7C7B;&#x540C;&#x6B65;&#x5668; AQS &#x7EE7;&#x627F;&#x5E76;&#x5B9E;&#x73B0;&#x5B83;&#x6307;&#x5B9A;&#x7684;&#x65B9;&#x6CD5;&#x6765;&#x7BA1;&#x7406;&#x540C;&#x6B65;&#x72B6;&#x6001;&#x3002;&#x4E00;&#x822C;&#x6211;&#x4EEC;&#x53EA;&#x9700;&#x8981;&#x5B9A;&#x4E49;&#x7EBF;&#x7A0B;&#x80FD;&#x5426;&#x83B7;&#x5F97;&#x9501;&#x7684;&#x5224;&#x65AD;&#x903B;&#x8F91;&#xFF0C;&#x800C;&#x540E;&#x7EED;&#x7684;&#x5904;&#x7406;&#xFF08;&#x4F8B;&#x5982;&#x7EBF;&#x7A0B;&#x83B7;&#x53D6;&#x9501;&#x5931;&#x8D25;&#x8FDB;&#x5165;&#x540C;&#x6B65;&#x961F;&#x5217;&#x7B49;&#x5F85;&#xFF09;&#x5219;&#x4EA4;&#x7ED9; AQS &#x6765;&#x5B8C;&#x6210;&#x3002;&#x4E00;&#x822C;&#x6765;&#x8BF4;&#xFF0C;&#x6211;&#x4EEC;&#x53EA;&#x9700;&#x8981;&#x91CD;&#x5199;&#x4E0B;&#x9762;&#x51E0;&#x4E2A;&#x65B9;&#x6CD5;</p>
-<h2 id="cas-&#x64CD;&#x4F5C;"><a name="cas-&#x64CD;&#x4F5C;" class="anchor-navigation-ex-anchor" href="#cas-&#x64CD;&#x4F5C;"><i class="fa fa-link" aria-hidden="true"></i></a>CAS &#x64CD;&#x4F5C;</h2>
+<p>&#x81EA;&#x5B9A;&#x4E49;&#x7EC4;&#x4EF6;&#x901A;&#x8FC7;&#x4F7F;&#x7528;&#x4F7F;&#x7528;&#x540C;&#x6B65;&#x5668;&#x63D0;&#x4F9B;&#x7684;&#x6A21;&#x677F;&#x65B9;&#x6CD5;&#x6765;&#x5B9E;&#x73B0;&#x81EA;&#x5DF1;&#x7684;&#x540C;&#x6B65;&#x8BED;&#x4E49;&#x3002;&#x4E0B;&#x9762;&#x6211;&#x4EEC;&#x901A;&#x8FC7;&#x4E24;&#x4E2A;&#x793A;&#x4F8B;&#xFF0C;&#x770B;&#x4E0B;&#x5982;&#x4F55;&#x501F;&#x52A9;&#x4E8E; AQS &#x6765;&#x5B9E;&#x73B0;&#x9501;&#x7684;&#x540C;&#x6B65;&#x8BED;&#x4E49;&#x3002;&#x6211;&#x4EEC;&#x9996;&#x5148;&#x5B9E;&#x73B0;&#x4E00;&#x4E2A;&#x72EC;&#x5360;&#x9501;&#xFF08;&#x6392;&#x5B83;&#x9501;&#xFF09;&#xFF0C;&#x72EC;&#x5360;&#x9501;&#x5C31;&#x662F;&#x8BF4;&#x5728;&#x67D0;&#x4E2A;&#x65F6;&#x523B;&#x5185;&#xFF0C;&#x53EA;&#x80FD;&#x6709;&#x4E00;&#x4E2A;&#x7EBF;&#x7A0B;&#x6301;&#x6709;&#x72EC;&#x5360;&#x9501;&#xFF0C;&#x53EA;&#x6709;&#x6301;&#x6709;&#x9501;&#x7684;&#x7EBF;&#x7A0B;&#x91CA;&#x653E;&#x4E86;&#x72EC;&#x5360;&#x9501;&#xFF0C;&#x5176;&#x4ED6;&#x7EBF;&#x7A0B;&#x53EF;&#x4EE5;&#x83B7;&#x53D6;&#x72EC;&#x5360;&#x9501;&#x3002;&#x4E0B;&#x9762;&#x662F;&#x5177;&#x4F53;&#x5B9E;&#x73B0;&#xFF1A;</p>
+<pre class="language-"><code class="lang-java"><span class="token keyword">import</span> java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span>TimeUnit<span class="token punctuation">;</span>
+<span class="token keyword">import</span> java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span>locks<span class="token punctuation">.</span>AbstractQueuedLongSynchronizer<span class="token punctuation">;</span>
+<span class="token keyword">import</span> java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span>locks<span class="token punctuation">.</span>Condition<span class="token punctuation">;</span>
+<span class="token keyword">import</span> java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span>locks<span class="token punctuation">.</span>Lock<span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">/**
+ * Created by Jikai Zhang on 2017/4/6.
+ * &lt;p&gt;
+ * &#x81EA;&#x5B9A;&#x4E49;&#x72EC;&#x5360;&#x9501;
+ */</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Mutex</span> <span class="token keyword">implements</span> <span class="token class-name">Lock</span> <span class="token punctuation">{</span>
+
+    <span class="token comment" spellcheck="true">// &#x901A;&#x8FC7;&#x7EE7;&#x627F; AQS&#xFF0C;&#x81EA;&#x5B9A;&#x4E49;&#x540C;&#x6B65;&#x5668;</span>
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">class</span> <span class="token class-name">Sync</span> <span class="token keyword">extends</span> <span class="token class-name">AbstractQueuedLongSynchronizer</span> <span class="token punctuation">{</span>
+
+        <span class="token comment" spellcheck="true">// &#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x662F;&#x5426;&#x88AB;&#x72EC;&#x5360;</span>
+        <span class="token annotation punctuation">@Override</span>
+        <span class="token keyword">protected</span> <span class="token keyword">boolean</span> <span class="token function">isHeldExclusively</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token function">getState</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">1</span><span class="token punctuation">;</span>
+
+        <span class="token punctuation">}</span>
+
+        <span class="token comment" spellcheck="true">// &#x5C1D;&#x8BD5;&#x83B7;&#x5F97;&#x9501;</span>
+        <span class="token annotation punctuation">@Override</span>
+        <span class="token keyword">protected</span> <span class="token keyword">boolean</span> <span class="token function">tryAcquire</span><span class="token punctuation">(</span><span class="token keyword">long</span> arg<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// &#x53EA;&#x6709;&#x5F53; state &#x7684;&#x503C;&#x4E3A; 0&#xFF0C;&#x5E76;&#x4E14;&#x7EBF;&#x7A0B;&#x6210;&#x529F;&#x5C06; state &#x503C;&#x4FEE;&#x6539;&#x4E3A; 1 &#x4E4B;&#x540E;&#xFF0C;&#x7EBF;&#x7A0B;&#x624D;&#x53EF;&#x4EE5;&#x83B7;&#x5F97;&#x72EC;&#x5360;&#x9501;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">compareAndSetState</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token function">setExclusiveOwnerThread</span><span class="token punctuation">(</span>Thread<span class="token punctuation">.</span><span class="token function">currentThread</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+
+        <span class="token punctuation">}</span>
+
+        <span class="token annotation punctuation">@Override</span>
+        <span class="token keyword">protected</span> <span class="token keyword">boolean</span> <span class="token function">tryRelease</span><span class="token punctuation">(</span><span class="token keyword">long</span> arg<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// state &#x4E3A; 0 &#x8BF4;&#x660E;&#x5F53;&#x524D;&#x540C;&#x6B65;&#x5757;&#x4E2D;&#x6CA1;&#x6709;&#x9501;&#x4E86;&#xFF0C;&#x65E0;&#x9700;&#x91CA;&#x653E;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">getState</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">IllegalMonitorStateException</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            <span class="token comment" spellcheck="true">// &#x5C06;&#x72EC;&#x5360;&#x7684;&#x7EBF;&#x7A0B;&#x8BBE;&#x4E3A; null</span>
+            <span class="token function">setExclusiveOwnerThread</span><span class="token punctuation">(</span>null<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token comment" spellcheck="true">// &#x5C06;&#x72B6;&#x6001;&#x53D8;&#x91CF;&#x7684;&#x503C;&#x8BBE;&#x4E3A; 0&#xFF0C;&#x4EE5;&#x4FBF;&#x5176;&#x4ED6;&#x7EBF;&#x7A0B;&#x53EF;&#x4EE5;&#x6210;&#x529F;&#x4FEE;&#x6539;&#x72B6;&#x6001;&#x53D8;&#x91CF;&#x4ECE;&#x800C;&#x83B7;&#x5F97;&#x9501;</span>
+            <span class="token function">setState</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        Condition <span class="token function">newCondition</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">ConditionObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">// &#x5C06;&#x64CD;&#x4F5C;&#x4EE3;&#x7406;&#x5230; Sync &#x4E0A;</span>
+    <span class="token keyword">private</span> <span class="token keyword">final</span> Sync sync <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Sync</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        sync<span class="token punctuation">.</span><span class="token function">acquire</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">lockInterruptibly</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> InterruptedException <span class="token punctuation">{</span>
+        sync<span class="token punctuation">.</span><span class="token function">acquireInterruptibly</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">tryLock</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> sync<span class="token punctuation">.</span><span class="token function">tryAcquire</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">tryLock</span><span class="token punctuation">(</span><span class="token keyword">long</span> time<span class="token punctuation">,</span> TimeUnit unit<span class="token punctuation">)</span> <span class="token keyword">throws</span> InterruptedException <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> sync<span class="token punctuation">.</span><span class="token function">tryAcquireNanos</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> unit<span class="token punctuation">.</span><span class="token function">toNanos</span><span class="token punctuation">(</span>time<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        sync<span class="token punctuation">.</span><span class="token function">release</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> Condition <span class="token function">newCondition</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> sync<span class="token punctuation">.</span><span class="token function">newCondition</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">hasQueuedThreads</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> sync<span class="token punctuation">.</span><span class="token function">hasQueuedThreads</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">isLocked</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> sync<span class="token punctuation">.</span><span class="token function">isHeldExclusively</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">withoutMutex</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> InterruptedException <span class="token punctuation">{</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">&quot;Without mutex: &quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">int</span> threadCount <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">;</span>
+        <span class="token keyword">final</span> Thread threads<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Thread</span><span class="token punctuation">[</span>threadCount<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> threads<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">final</span> <span class="token keyword">int</span> index <span class="token operator">=</span> i<span class="token punctuation">;</span>
+            threads<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Thread</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Runnable</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token annotation punctuation">@Override</span>
+                <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">run</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> j <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> j <span class="token operator">&lt;</span> <span class="token number">100000</span><span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                        <span class="token keyword">if</span> <span class="token punctuation">(</span>j <span class="token operator">%</span> <span class="token number">20000</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                            System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">&quot;Thread-&quot;</span> <span class="token operator">+</span> index <span class="token operator">+</span> <span class="token string">&quot;: j =&quot;</span> <span class="token operator">+</span> j<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token punctuation">}</span>
+                    <span class="token punctuation">}</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> threads<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            threads<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> threads<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            threads<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">withMutex</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">&quot;Without mutex: &quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">final</span> Mutex mutex <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Mutex</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">int</span> threadCount <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">;</span>
+        <span class="token keyword">final</span> Thread threads<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Thread</span><span class="token punctuation">[</span>threadCount<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> threads<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">final</span> <span class="token keyword">int</span> index <span class="token operator">=</span> i<span class="token punctuation">;</span>
+            threads<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Thread</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Runnable</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+                <span class="token annotation punctuation">@Override</span>
+                <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">run</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+                    mutex<span class="token punctuation">.</span><span class="token function">lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token keyword">try</span> <span class="token punctuation">{</span>
+                        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> j <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> j <span class="token operator">&lt;</span> <span class="token number">100000</span><span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                            <span class="token keyword">if</span> <span class="token punctuation">(</span>j <span class="token operator">%</span> <span class="token number">20000</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                                System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">&quot;Thread-&quot;</span> <span class="token operator">+</span> index <span class="token operator">+</span> <span class="token string">&quot;: j =&quot;</span> <span class="token operator">+</span> j<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                            <span class="token punctuation">}</span>
+                        <span class="token punctuation">}</span>
+                    <span class="token punctuation">}</span> <span class="token keyword">finally</span> <span class="token punctuation">{</span>
+                        mutex<span class="token punctuation">.</span><span class="token function">unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token punctuation">}</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> threads<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            threads<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> InterruptedException <span class="token punctuation">{</span>
+        <span class="token function">withoutMutex</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">withMutex</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>&#x7A0B;&#x5E8F;&#x7684;&#x8FD0;&#x884C;&#x7ED3;&#x679C;&#x5982;&#x4E0B;&#x9762;&#x6240;&#x793A;&#x3002;&#x6211;&#x4EEC;&#x770B;&#x5230;&#x4F7F;&#x7528;&#x4E86; Mutex &#x4E4B;&#x540E;&#xFF0C;&#x7EBF;&#x7A0B; 0 &#x548C;&#x7EBF;&#x7A0B; 1 &#x4E0D;&#x4F1A;&#x518D;&#x4EA4;&#x66FF;&#x6267;&#x884C;&#xFF0C;&#x800C;&#x662F;&#x5F53;&#x4E00;&#x4E2A;&#x7EBF;&#x7A0B;&#x6267;&#x884C;&#x5B8C;&#xFF0C;&#x53E6;&#x5916;&#x4E00;&#x4E2A;&#x7EBF;&#x7A0B;&#x518D;&#x6267;&#x884C;&#x3002;</p>
+<pre class="language-"><code>Without mutex:
+Thread-0: j =0
+Thread-1: j =0
+Thread-0: j =20000
+Thread-1: j =20000
+Thread-0: j =40000
+Thread-1: j =40000
+Thread-0: j =60000
+Thread-1: j =60000
+Thread-1: j =80000
+Thread-0: j =80000
+
+With mutex:
+Thread-0: j =0
+Thread-0: j =20000
+Thread-0: j =40000
+Thread-0: j =60000
+Thread-0: j =80000
+Thread-1: j =0
+Thread-1: j =20000
+Thread-1: j =40000
+Thread-1: j =60000
+Thread-1: j =80000
+</code></pre><p>&#x4E0B;&#x9762;&#x5728;&#x770B;&#x4E00;&#x4E2A;&#x5171;&#x4EAB;&#x9501;&#x7684;&#x793A;&#x4F8B;&#x3002;&#x5728;&#x8BE5;&#x793A;&#x4F8B;&#x4E2D;&#xFF0C;&#x6211;&#x4EEC;&#x5B9A;&#x4E49;&#x4E24;&#x4E2A;&#x5171;&#x4EAB;&#x8D44;&#x6E90;&#xFF0C;&#x5373;&#x540C;&#x4E00;&#x65F6;&#x95F4;&#x5185;&#x5141;&#x8BB8;&#x4E24;&#x4E2A;&#x7EBF;&#x7A0B;&#x540C;&#x65F6;&#x6267;&#x884C;&#x3002;&#x6211;&#x4EEC;&#x5C06;&#x540C;&#x6B65;&#x53D8;&#x91CF;&#x7684;&#x521D;&#x59CB;&#x72B6;&#x6001; state &#x8BBE;&#x4E3A; 2&#xFF0C;&#x5F53;&#x4E00;&#x4E2A;&#x7EBF;&#x7A0B;&#x83B7;&#x53D6;&#x4E86;&#x5171;&#x4EAB;&#x9501;&#x4E4B;&#x540E;&#xFF0C;&#x5C06; state &#x51CF; 1&#xFF0C;&#x7EBF;&#x7A0B;&#x91CA;&#x653E;&#x4E86;&#x5171;&#x4EAB;&#x9501;&#x540E;&#xFF0C;&#x5C06; state &#x52A0; 1&#x3002;&#x72B6;&#x6001;&#x7684;&#x5408;&#x6CD5;&#x8303;&#x56F4;&#x662F; 0&#x3001;1 &#x548C; 2&#xFF0C;&#x5176;&#x4E2D; 0 &#x8868;&#x793A;&#x5DF2;&#x7ECF;&#x8D44;&#x6E90;&#x5DF2;&#x7ECF;&#x7528;&#x5149;&#x4E86;&#xFF0C;&#x6B64;&#x65F6;&#x7EBF;&#x7A0B;&#x518D;&#x8981;&#x83B7;&#x5F97;&#x5171;&#x4EAB;&#x9501;&#x5C31;&#x9700;&#x8981;&#x8FDB;&#x5165;&#x540C;&#x6B65;&#x5E8F;&#x5217;&#x7B49;&#x5F85;&#x3002;&#x4E0B;&#x9762;&#x662F;&#x5177;&#x4F53;&#x5B9E;&#x73B0;&#xFF1A;</p>
+<pre class="language-"><code class="lang-java"><span class="token keyword">import</span> java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span>TimeUnit<span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span>locks<span class="token punctuation">.</span>AbstractQueuedSynchronizer<span class="token punctuation">;</span>
+<span class="token keyword">import</span> java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span>locks<span class="token punctuation">.</span>Condition<span class="token punctuation">;</span>
+<span class="token keyword">import</span> java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span>locks<span class="token punctuation">.</span>Lock<span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">/**
+ * Created by Jikai Zhang on 2017/4/9.
+ * &lt;p&gt;
+ * &#x81EA;&#x5B9A;&#x4E49;&#x5171;&#x4EAB;&#x9501;
+ */</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">TwinsLock</span> <span class="token keyword">implements</span> <span class="token class-name">Lock</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">class</span> <span class="token class-name">Sync</span> <span class="token keyword">extends</span> <span class="token class-name">AbstractQueuedSynchronizer</span> <span class="token punctuation">{</span>
+
+        <span class="token keyword">public</span> <span class="token function">Sync</span><span class="token punctuation">(</span><span class="token keyword">int</span> resourceCount<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>resourceCount <span class="token operator">&lt;=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">IllegalArgumentException</span><span class="token punctuation">(</span><span class="token string">&quot;resourceCount must be larger than zero.&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            <span class="token comment" spellcheck="true">// &#x8BBE;&#x7F6E;&#x53EF;&#x4EE5;&#x5171;&#x4EAB;&#x7684;&#x8D44;&#x6E90;&#x603B;&#x6570;</span>
+            <span class="token function">setState</span><span class="token punctuation">(</span>resourceCount<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+
+        <span class="token annotation punctuation">@Override</span>
+        <span class="token keyword">protected</span> <span class="token keyword">int</span> <span class="token function">tryAcquireShared</span><span class="token punctuation">(</span><span class="token keyword">int</span> reduceCount<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// &#x4F7F;&#x7528;&#x5C1D;&#x8BD5;&#x83B7;&#x5F97;&#x8D44;&#x6E90;&#xFF0C;&#x5982;&#x679C;&#x6210;&#x529F;&#x4FEE;&#x6539;&#x4E86;&#x72B6;&#x6001;&#x53D8;&#x91CF;&#xFF08;&#x83B7;&#x5F97;&#x4E86;&#x8D44;&#x6E90;&#xFF09;&#x6216;&#x8005;&#x8D44;&#x6E90;&#x7684;&#x603B;&#x91CF;&#x5C0F;&#x4E8E; 0&#xFF08;&#x6CA1;&#x6709;&#x8D44;&#x6E90;&#x4E86;&#xFF09;&#xFF0C;&#x5219;&#x8FD4;&#x56DE;&#x3002;</span>
+            <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token punctuation">;</span> <span class="token punctuation">;</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token keyword">int</span> lastCount <span class="token operator">=</span> <span class="token function">getState</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">int</span> newCount <span class="token operator">=</span> lastCount <span class="token operator">-</span> reduceCount<span class="token punctuation">;</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>newCount <span class="token operator">&lt;</span> <span class="token number">0</span> <span class="token operator">||</span> <span class="token function">compareAndSetState</span><span class="token punctuation">(</span>lastCount<span class="token punctuation">,</span> newCount<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token keyword">return</span> newCount<span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token annotation punctuation">@Override</span>
+        <span class="token keyword">protected</span> <span class="token keyword">boolean</span> <span class="token function">tryReleaseShared</span><span class="token punctuation">(</span><span class="token keyword">int</span> returnCount<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// &#x91CA;&#x653E;&#x5171;&#x4EAB;&#x8D44;&#x6E90;&#xFF0C;&#x56E0;&#x4E3A;&#x53EF;&#x80FD;&#x6709;&#x591A;&#x4E2A;&#x7EBF;&#x7A0B;&#x540C;&#x65F6;&#x6267;&#x884C;&#xFF0C;&#x6240;&#x4EE5;&#x9700;&#x8981;&#x4F7F;&#x7528; CAS &#x64CD;&#x4F5C;&#x6765;&#x4FEE;&#x6539;&#x8D44;&#x6E90;&#x603B;&#x6570;&#x3002;</span>
+            <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token punctuation">;</span> <span class="token punctuation">;</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token keyword">int</span> lastCount <span class="token operator">=</span> <span class="token function">getState</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">int</span> newCount <span class="token operator">=</span> lastCount <span class="token operator">+</span> returnCount<span class="token punctuation">;</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">compareAndSetState</span><span class="token punctuation">(</span>lastCount<span class="token punctuation">,</span> newCount<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">// &#x5B9A;&#x4E49;&#x4E24;&#x4E2A;&#x5171;&#x4EAB;&#x8D44;&#x6E90;&#xFF0C;&#x8BF4;&#x660E;&#x540C;&#x4E00;&#x65F6;&#x95F4;&#x5185;&#x53EF;&#x4EE5;&#x6709;&#x4E24;&#x4E2A;&#x7EBF;&#x7A0B;&#x540C;&#x65F6;&#x8FD0;&#x884C;</span>
+    <span class="token keyword">private</span> <span class="token keyword">final</span> Sync sync <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Sync</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        sync<span class="token punctuation">.</span><span class="token function">acquireShared</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">lockInterruptibly</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> InterruptedException <span class="token punctuation">{</span>
+        sync<span class="token punctuation">.</span><span class="token function">acquireInterruptibly</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">tryLock</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> sync<span class="token punctuation">.</span><span class="token function">tryAcquireShared</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&gt;=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">tryLock</span><span class="token punctuation">(</span><span class="token keyword">long</span> time<span class="token punctuation">,</span> TimeUnit unit<span class="token punctuation">)</span> <span class="token keyword">throws</span> InterruptedException <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> sync<span class="token punctuation">.</span><span class="token function">tryAcquireNanos</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> unit<span class="token punctuation">.</span><span class="token function">toNanos</span><span class="token punctuation">(</span>time<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        sync<span class="token punctuation">.</span><span class="token function">releaseShared</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> Condition <span class="token function">newCondition</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">UnsupportedOperationException</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">final</span> Lock lock <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">TwinsLock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">int</span> threadCounts <span class="token operator">=</span> <span class="token number">10</span><span class="token punctuation">;</span>
+        Thread threads<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Thread</span><span class="token punctuation">[</span>threadCounts<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> threadCounts<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">final</span> <span class="token keyword">int</span> index <span class="token operator">=</span> i<span class="token punctuation">;</span>
+            threads<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Thread</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Runnable</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token annotation punctuation">@Override</span>
+                <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">run</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">5</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                        lock<span class="token punctuation">.</span><span class="token function">lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token keyword">try</span> <span class="token punctuation">{</span>
+                            TimeUnit<span class="token punctuation">.</span>SECONDS<span class="token punctuation">.</span><span class="token function">sleep</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                            System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>Thread<span class="token punctuation">.</span><span class="token function">currentThread</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">InterruptedException</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                            e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token punctuation">}</span> <span class="token keyword">finally</span> <span class="token punctuation">{</span>
+                            lock<span class="token punctuation">.</span><span class="token function">unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token punctuation">}</span>
+
+                        <span class="token keyword">try</span> <span class="token punctuation">{</span>
+                            TimeUnit<span class="token punctuation">.</span>SECONDS<span class="token punctuation">.</span><span class="token function">sleep</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">InterruptedException</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                            e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token punctuation">}</span>
+                    <span class="token punctuation">}</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> threadCounts<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            threads<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>&#x8FD0;&#x884C;&#x7A0B;&#x5E8F;&#xFF0C;&#x6211;&#x4EEC;&#x4F1A;&#x53D1;&#x73B0;&#x7A0B;&#x5E8F;&#x6BCF;&#x6B21;&#x90FD;&#x4F1A;&#x540C;&#x65F6;&#x6253;&#x5370;&#x4E24;&#x6761;&#x8BED;&#x53E5;&#xFF0C;&#x5982;&#x4E0B;&#x9762;&#x7684;&#x5F62;&#x5F0F;&#xFF0C;&#x8BC1;&#x660E;&#x540C;&#x65F6;&#x6709;&#x4E24;&#x4E2A;&#x7EBF;&#x7A0B;&#x5728;&#x6267;&#x884C;&#x3002;</p>
+<pre class="language-"><code>Thread-0
+Thread-1
+Thread-3
+Thread-2
+Thread-8
+Thread-4
+Thread-3
+Thread-6
+</code></pre><h2 id="cas-&#x64CD;&#x4F5C;"><a name="cas-&#x64CD;&#x4F5C;" class="anchor-navigation-ex-anchor" href="#cas-&#x64CD;&#x4F5C;"><i class="fa fa-link" aria-hidden="true"></i></a>CAS &#x64CD;&#x4F5C;</h2>
 <p>CAS&#xFF08;Compare and Swap&#xFF09;&#xFF0C;&#x6BD4;&#x8F83;&#x5E76;&#x4EA4;&#x6362;&#xFF0C;&#x901A;&#x8FC7;&#x5229;&#x7528;&#x5E95;&#x5C42;&#x786C;&#x4EF6;&#x5E73;&#x53F0;&#x7684;&#x7279;&#x6027;&#xFF0C;&#x5B9E;&#x73B0;&#x539F;&#x5B50;&#x6027;&#x64CD;&#x4F5C;&#x3002;CAS &#x64CD;&#x4F5C;&#x6D89;&#x53CA;&#x5230;3&#x4E2A;&#x64CD;&#x4F5C;&#x6570;&#xFF0C;&#x5185;&#x5B58;&#x503C; V&#xFF0C;&#x65E7;&#x7684;&#x671F;&#x671B;&#x503C; A&#xFF0C;&#x9700;&#x8981;&#x4FEE;&#x6539;&#x7684;&#x65B0;&#x503C; B&#x3002;&#x5F53;&#x4E14;&#x4EC5;&#x5F53;&#x9884;&#x671F;&#x503C; A &#x548C; &#x5185;&#x5B58;&#x503C; V &#x76F8;&#x540C;&#x65F6;&#xFF0C;&#x624D;&#x5C06;&#x5185;&#x5B58;&#x503C; V &#x4FEE;&#x6539;&#x4E3A; B&#xFF0C;&#x5426;&#x5219;&#x4EC0;&#x4E48;&#x90FD;&#x4E0D;&#x505A;&#x3002;CAS &#x64CD;&#x4F5C;&#x7C7B;&#x4F3C;&#x4E8E;&#x6267;&#x884C;&#x4E86;&#x4E0B;&#x9762;&#x6D41;&#x7A0B;</p>
 <pre class="language-"><code class="lang-java"><span class="token keyword">if</span><span class="token punctuation">(</span>oldValue <span class="token operator">==</span> memory<span class="token punctuation">[</span>valueAddress<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     memory<span class="token punctuation">[</span>valueAddress<span class="token punctuation">]</span> <span class="token operator">=</span> newValue<span class="token punctuation">;</span>
@@ -563,9 +874,6 @@ unsafe<span class="token punctuation">.</span><span class="token function">compa
 <span class="token punctuation">}</span>
 </code></pre>
 <h2 id="&#x540C;&#x6B65;&#x961F;&#x5217;"><a name="&#x540C;&#x6B65;&#x961F;&#x5217;" class="anchor-navigation-ex-anchor" href="#&#x540C;&#x6B65;&#x961F;&#x5217;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x540C;&#x6B65;&#x961F;&#x5217;</h2>
-<ul>
-<li><a href="http://blog.csdn.net/chen77716/article/details/6641477" target="_blank">&#x6DF1;&#x5165;JVM&#x9501;&#x673A;&#x5236;2-Lock</a></li>
-</ul>
 <p>&#x540C;&#x6B65;&#x5668;&#x4F9D;&#x8D56;&#x5185;&#x90E8;&#x7684;&#x540C;&#x6B65;&#x961F;&#x5217;&#xFF08;&#x4E00;&#x4E2A; FIFO&#xFF09;&#x7684;&#x53CC;&#x5411;&#x961F;&#x5217;&#x6765;&#x5B8C;&#x6210;&#x540C;&#x6B65;&#x72B6;&#x6001;&#x7684;&#x7BA1;&#x7406;&#xFF0C;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x83B7;&#x53D6;&#x540C;&#x6B65;&#x72B6;&#x6001;&#x5931;&#x8D25;&#x65F6;&#xFF0C;&#x540C;&#x6B65;&#x5668;&#x4F1A;&#x5C06;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x4EE5;&#x53CA;&#x7B49;&#x5F85;&#x72B6;&#x6001;&#x7B49;&#x4FE1;&#x606F;&#x6784;&#x9020;&#x6210;&#x4E00;&#x4E2A;&#x8282;&#x70B9;&#xFF08;Node&#xFF09;&#x5E76;&#x5C06;&#x5176;&#x52A0;&#x5165;&#x540C;&#x6B65;&#x961F;&#x5217;&#xFF0C;&#x540C;&#x65F6;&#x4F1A;&#x963B;&#x585E;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#xFF0C;&#x5F53;&#x540C;&#x6B65;&#x72B6;&#x6001;&#x91CA;&#x653E;&#x65F6;&#xFF0C;&#x4F1A;&#x628A;&#x9996;&#x8282;&#x70B9;&#x4E2D;&#x7684;&#x7EBF;&#x7A0B;&#x5524;&#x9192;&#xFF0C;&#x4F7F;&#x5176;&#x518D;&#x6B21;&#x5C1D;&#x8BD5;&#x83B7;&#x53D6;&#x540C;&#x6B65;&#x72B6;&#x6001;&#x3002;</p>
 <h2 id="&#x53C2;&#x8003;&#x6587;&#x7AE0;"><a name="&#x53C2;&#x8003;&#x6587;&#x7AE0;" class="anchor-navigation-ex-anchor" href="#&#x53C2;&#x8003;&#x6587;&#x7AE0;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x53C2;&#x8003;&#x6587;&#x7AE0;</h2>
 <ul>
@@ -573,6 +881,8 @@ unsafe<span class="token punctuation">.</span><span class="token function">compa
 <li><a href="http://ifeve.com/sun-misc-unsafe/" target="_blank">Java Magic. Part 4: sun.misc.Unsafe</a></li>
 <li><a href="http://www.blogjava.net/mstar/archive/2013/04/24/398351.html" target="_blank">Java&#x91CC;&#x7684;CompareAndSet(CAS)</a></li>
 <li><a href="http://blog.csdn.net/luonanqin/article/details/41871909" target="_blank">ReentrantLock&#x7684;lock-unlock&#x6D41;&#x7A0B;&#x8BE6;&#x89E3;</a></li>
+<li><a href="http://blog.csdn.net/chen77716/article/details/6641477" target="_blank">&#x6DF1;&#x5165;JVM&#x9501;&#x673A;&#x5236;2-Lock</a></li>
+<li><a href="http://www.infoq.com/cn/articles/jdk1.8-abstractqueuedsynchronizer" target="_blank">&#x6DF1;&#x5EA6;&#x89E3;&#x6790;Java 8&#xFF1A;JDK1.8 AbstractQueuedSynchronizer&#x7684;&#x5B9E;&#x73B0;&#x5206;&#x6790;&#xFF08;&#x4E0A;&#xFF09;</a></li>
 </ul>
 <!--email_off-->
 
@@ -614,7 +924,7 @@ unsafe<span class="token punctuation">.</span><span class="token function">compa
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"AbstractQueuedSynchronizer","level":"1.3.2","depth":2,"previous":{"title":"Lock 框架","level":"1.3.1","depth":2,"path":"Lock框架.md","ref":"Lock框架.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-lunr","-search","-highlight","-livereload","search-plus@^0.0.11","simple-page-toc@^0.1.1","github@^2.0.0","edit-link@^2.0.2","prism@^2.1.0","prism-themes@^0.0.2","anchors@^0.7.1","-expandable-chapters-small@^0.1.7","duoshuo","3-ba","sitemap-general@^0.1.1","anchor-navigation-ex@0.1.8","favicon@^0.0.2","3-ba@^0.9.0"],"root":".","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prism-themes/themes/prism-base16-ateliersulphurpool.light.css"]},"github":{"url":"https://github.com/zhangjikai/concurrency-in-java"},"simple-page-toc":{"maxDepth":4,"skipFirstH1":true},"duoshuo":{"short_name":"zhangjkblog","theme":"default"},"donate":{"wechat":"https://zhangjikai.com/resource/weixin.png","alipay":"https://zhangjikai.com/resource/alipay.png","title":"","button":"赏","alipayText":"支付宝打赏","wechatText":"微信打赏"},"sitemap-general":{"prefix":"http://con.zhangjikai.com"},"fontsettings":{"theme":"white","family":"sans","size":2},"anchor-navigation-ex":{"isRewritePageTitle":false,"tocLevel1Icon":"fa fa-hand-o-right","tocLevel2Icon":"fa fa-hand-o-right","tocLevel3Icon":"fa fa-hand-o-right"},"favicon":{"shortcut":"favicon.ico","bookmark":"favicon.ico"},"prism-themes":{},"3-ba":{"configuration":"auto","token":"ff100361cdce95dd4c8fb96b4009f7bc"},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":true,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"label":"Edit This Page","base":"https://github.com/zhangjikai/concurrency-in-java/edit/master"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true},"anchors":{},"search-plus":{}},"theme":"default","author":"zhangjikai","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Java 并发编程","language":"zh-hans","output.name":"site","links":{"sidebar":{"Home":"http://www.zhangjikai.com"}},"gitbook":"3.2.2","description":"Java 并发编程学习笔记"},"file":{"path":"AbstractQueuedSynchronizer.md","mtime":"2017-04-09T08:58:19.523Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-04-09T08:58:35.549Z"},"basePath":".","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"AbstractQueuedSynchronizer","level":"1.3.2","depth":2,"previous":{"title":"Lock 框架","level":"1.3.1","depth":2,"path":"Lock框架.md","ref":"Lock框架.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-lunr","-search","-highlight","-livereload","search-plus@^0.0.11","simple-page-toc@^0.1.1","github@^2.0.0","edit-link@^2.0.2","prism@^2.1.0","prism-themes@^0.0.2","anchors@^0.7.1","-expandable-chapters-small@^0.1.7","duoshuo","3-ba","sitemap-general@^0.1.1","anchor-navigation-ex@0.1.8","favicon@^0.0.2","3-ba@^0.9.0"],"root":".","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prism-themes/themes/prism-base16-ateliersulphurpool.light.css"]},"github":{"url":"https://github.com/zhangjikai/concurrency-in-java"},"simple-page-toc":{"maxDepth":4,"skipFirstH1":true},"duoshuo":{"short_name":"zhangjkblog","theme":"default"},"donate":{"wechat":"https://zhangjikai.com/resource/weixin.png","alipay":"https://zhangjikai.com/resource/alipay.png","title":"","button":"赏","alipayText":"支付宝打赏","wechatText":"微信打赏"},"sitemap-general":{"prefix":"http://con.zhangjikai.com"},"fontsettings":{"theme":"white","family":"sans","size":2},"anchor-navigation-ex":{"isRewritePageTitle":false,"tocLevel1Icon":"fa fa-hand-o-right","tocLevel2Icon":"fa fa-hand-o-right","tocLevel3Icon":"fa fa-hand-o-right"},"favicon":{"shortcut":"favicon.ico","bookmark":"favicon.ico"},"prism-themes":{},"3-ba":{"configuration":"auto","token":"ff100361cdce95dd4c8fb96b4009f7bc"},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":true,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"label":"Edit This Page","base":"https://github.com/zhangjikai/concurrency-in-java/edit/master"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true},"anchors":{},"search-plus":{}},"theme":"default","author":"zhangjikai","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Java 并发编程","language":"zh-hans","output.name":"site","links":{"sidebar":{"Home":"http://www.zhangjikai.com"}},"gitbook":"3.2.2","description":"Java 并发编程学习笔记"},"file":{"path":"AbstractQueuedSynchronizer.md","mtime":"2017-04-09T12:06:26.694Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-04-09T12:07:33.093Z"},"basePath":".","book":{"language":""}});
         });
     </script>
 </div>
