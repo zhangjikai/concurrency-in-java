@@ -78,3 +78,7 @@ input[type=checkbox]{
 #anchor-navigation-ex-navbar {
   line-height: 1.5em;
 }
+
+table td:nth-child(1) {
+    white-space: nowrap;
+}
