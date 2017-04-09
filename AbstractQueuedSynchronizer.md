@@ -41,12 +41,325 @@ AQS 的设计是基于模板方法的，使用者需要继承 AQS 并重写指�
 | boolean releaseShared(int) | 共享式释放锁 |
 | Collection<Thread> getQueuedThreads() | 获得同步队列中等待的线程集合 |
 
-自定义组件通过使用使用同步器提供的模板方法来实现自己的同步语义。
+自定义组件通过使用使用同步器提供的模板方法来实现自己的同步语义。下面我们通过两个示例，看下如何借助于 AQS 来实现锁的同步语义。我们首先实现一个独占锁（排它锁），独占锁就是说在某个时刻内，只能有一个线程持有独占锁，只有持有锁的线程释放了独占锁，其他线程可以获取独占锁。下面是具体实现：
+```java
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.AbstractQueuedLongSynchronizer;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+
+/**
+ * Created by Jikai Zhang on 2017/4/6.
+ * <p>
+ * 自定义独占锁
+ */
+public class Mutex implements Lock {
+
+    // 通过继承 AQS，自定义同步器
+    private static class Sync extends AbstractQueuedLongSynchronizer {
+
+        // 当前线程是否被独占
+        @Override
+        protected boolean isHeldExclusively() {
+            return getState() == 1;
+
+        }
+
+        // 尝试获得锁
+        @Override
+        protected boolean tryAcquire(long arg) {
+            // 只有当 state 的值为 0，并且线程成功将 state 值修改为 1 之后，线程才可以获得独占锁
+            if (compareAndSetState(0, 1)) {
+                setExclusiveOwnerThread(Thread.currentThread());
+                return true;
+            }
+            return false;
+
+        }
+
+        @Override
+        protected boolean tryRelease(long arg) {
+            // state 为 0 说明当前同步块中没有锁了，无需释放
+            if (getState() == 0) {
+                throw new IllegalMonitorStateException();
+            }
+            // 将独占的线程设为 null
+            setExclusiveOwnerThread(null);
+            // 将状态变量的值设为 0，以便其他线程可以成功修改状态变量从而获得锁
+            setState(0);
+            return true;
+        }
+
+        Condition newCondition() {
+            return new ConditionObject();
+        }
+    }
+
+    // 将操作代理到 Sync 上
+    private final Sync sync = new Sync();
+
+    @Override
+    public void lock() {
+        sync.acquire(1);
+    }
+
+    @Override
+    public void lockInterruptibly() throws InterruptedException {
+        sync.acquireInterruptibly(1);
+    }
+
+    @Override
+    public boolean tryLock() {
+        return sync.tryAcquire(1);
+    }
+
+    @Override
+    public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
+        return sync.tryAcquireNanos(1, unit.toNanos(time));
+    }
+
+    @Override
+    public void unlock() {
+        sync.release(1);
+    }
+
+    @Override
+    public Condition newCondition() {
+        return sync.newCondition();
+    }
 
 
-AQS 的主要使用方式是继承，子类同步器 AQS 继承并实现它指定的方法来管理同步状态。一般我们只需要定义线程能否获得锁的判断逻辑，而后续的处理（例如线程获取锁失败进入同步队列等待）则交给 AQS 来完成。一般来说，我们只需要重写下面几个方法
+    public boolean hasQueuedThreads() {
+        return sync.hasQueuedThreads();
+    }
+
+    public boolean isLocked() {
+        return sync.isHeldExclusively();
+    }
+
+    public static void withoutMutex() throws InterruptedException {
+        System.out.println("Without mutex: ");
+        int threadCount = 2;
+        final Thread threads[] = new Thread[threadCount];
+        for (int i = 0; i < threads.length; i++) {
+            final int index = i;
+            threads[i] = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (int j = 0; j < 100000; j++) {
+                        if (j % 20000 == 0) {
+                            System.out.println("Thread-" + index + ": j =" + j);
+                        }
+                    }
+                }
+            });
+        }
+
+        for (int i = 0; i < threads.length; i++) {
+            threads[i].start();
+        }
+        for (int i = 0; i < threads.length; i++) {
+            threads[i].join();
+        }
+    }
 
 
+    public static void withMutex() {
+        System.out.println("Without mutex: ");
+        final Mutex mutex = new Mutex();
+        int threadCount = 2;
+        final Thread threads[] = new Thread[threadCount];
+        for (int i = 0; i < threads.length; i++) {
+            final int index = i;
+            threads[i] = new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    mutex.lock();
+                    try {
+                        for (int j = 0; j < 100000; j++) {
+                            if (j % 20000 == 0) {
+                                System.out.println("Thread-" + index + ": j =" + j);
+                            }
+                        }
+                    } finally {
+                        mutex.unlock();
+                    }
+                }
+            });
+        }
+
+        for (int i = 0; i < threads.length; i++) {
+            threads[i].start();
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        withoutMutex();
+        System.out.println();
+        withMutex();
+
+    }
+}
+```
+程序的运行结果如下面所示。我们看到使用了 Mutex 之后，线程 0 和线程 1 不会再交替执行，而是当一个线程执行完，另外一个线程再执行。
+```
+Without mutex:
+Thread-0: j =0
+Thread-1: j =0
+Thread-0: j =20000
+Thread-1: j =20000
+Thread-0: j =40000
+Thread-1: j =40000
+Thread-0: j =60000
+Thread-1: j =60000
+Thread-1: j =80000
+Thread-0: j =80000
+
+With mutex:
+Thread-0: j =0
+Thread-0: j =20000
+Thread-0: j =40000
+Thread-0: j =60000
+Thread-0: j =80000
+Thread-1: j =0
+Thread-1: j =20000
+Thread-1: j =40000
+Thread-1: j =60000
+Thread-1: j =80000
+```
+下面在看一个共享锁的示例。在该示例中，我们定义两个共享资源，即同一时间内允许两个线程同时执行。我们将同步变量的初始状态 state 设为 2，当一个线程获取了共享锁之后，将 state 减 1，线程释放了共享锁后，将 state 加 1。状态的合法范围是 0、1 和 2，其中 0 表示已经资源已经用光了，此时线程再要获得共享锁就需要进入同步序列等待。下面是具体实现：
+```java
+import java.util.concurrent.TimeUnit;
+
+import java.util.concurrent.locks.AbstractQueuedSynchronizer;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+
+/**
+ * Created by Jikai Zhang on 2017/4/9.
+ * <p>
+ * 自定义共享锁
+ */
+public class TwinsLock implements Lock {
+
+    private static class Sync extends AbstractQueuedSynchronizer {
+
+        public Sync(int resourceCount) {
+            if (resourceCount <= 0) {
+                throw new IllegalArgumentException("resourceCount must be larger than zero.");
+            }
+            // 设置可以共享的资源总数
+            setState(resourceCount);
+        }
+
+
+        @Override
+        protected int tryAcquireShared(int reduceCount) {
+            // 使用尝试获得资源，如果成功修改了状态变量（获得了资源）或者资源的总量小于 0（没有资源了），则返回。
+            for (; ; ) {
+                int lastCount = getState();
+                int newCount = lastCount - reduceCount;
+                if (newCount < 0 || compareAndSetState(lastCount, newCount)) {
+                    return newCount;
+                }
+            }
+        }
+
+        @Override
+        protected boolean tryReleaseShared(int returnCount) {
+            // 释放共享资源，因为可能有多个线程同时执行，所以需要使用 CAS 操作来修改资源总数。
+            for (; ; ) {
+                int lastCount = getState();
+                int newCount = lastCount + returnCount;
+                if (compareAndSetState(lastCount, newCount)) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    // 定义两个共享资源，说明同一时间内可以有两个线程同时运行
+    private final Sync sync = new Sync(2);
+
+    @Override
+    public void lock() {
+        sync.acquireShared(1);
+    }
+
+    @Override
+    public void lockInterruptibly() throws InterruptedException {
+        sync.acquireInterruptibly(1);
+    }
+
+    @Override
+    public boolean tryLock() {
+        return sync.tryAcquireShared(1) >= 0;
+    }
+
+    @Override
+    public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
+        return sync.tryAcquireNanos(1, unit.toNanos(time));
+    }
+
+    @Override
+    public void unlock() {
+        sync.releaseShared(1);
+    }
+
+    @Override
+    public Condition newCondition() {
+        throw new UnsupportedOperationException();
+    }
+
+    public static void main(String[] args) {
+        final Lock lock = new TwinsLock();
+        int threadCounts = 10;
+        Thread threads[] = new Thread[threadCounts];
+        for (int i = 0; i < threadCounts; i++) {
+            final int index = i;
+            threads[i] = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < 5; i++) {
+                        lock.lock();
+                        try {
+                            TimeUnit.SECONDS.sleep(1);
+                            System.out.println(Thread.currentThread().getName());
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } finally {
+                            lock.unlock();
+                        }
+
+                        try {
+                            TimeUnit.SECONDS.sleep(1);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        }
+
+        for (int i = 0; i < threadCounts; i++) {
+            threads[i].start();
+        }
+    }
+}
+```
+运行程序，我们会发现程序每次都会同时打印两条语句，如下面的形式，证明同时有两个线程在执行。
+```
+Thread-0
+Thread-1
+Thread-3
+Thread-2
+Thread-8
+Thread-4
+Thread-3
+Thread-6
+```
 
 ## CAS 操作
 CAS（Compare and Swap），比较并交换，通过利用底层硬件平台的特性，实现原子性操作。CAS 操作涉及到3个操作数，内存值 V，旧的期望值 A，需要修改的新值 B。当且仅当预期值 A 和 内存值 V 相同时，才将内存值 V 修改为 B，否则什么都不做。CAS 操作类似于执行了下面流程
@@ -244,7 +557,7 @@ public class CASCounter {
 ```
 
 ## 同步队列
-* [深入JVM锁机制2-Lock](http://blog.csdn.net/chen77716/article/details/6641477)
+
 
 同步器依赖内部的同步队列（一个 FIFO）的双向队列来完成同步状态的管理，当前线程获取同步状态失败时，同步器会将当前线程以及等待状态等信息构造成一个节点（Node）并将其加入同步队列，同时会阻塞当前线程，当同步状态释放时，会把首节点中的线程唤醒，使其再次尝试获取同步状态。
 
@@ -256,6 +569,8 @@ public class CASCounter {
 * [Java Magic. Part 4: sun.misc.Unsafe](http://ifeve.com/sun-misc-unsafe/)
 * [Java里的CompareAndSet(CAS)](http://www.blogjava.net/mstar/archive/2013/04/24/398351.html)
 * [ReentrantLock的lock-unlock流程详解](http://blog.csdn.net/luonanqin/article/details/41871909)
+* [深入JVM锁机制2-Lock](http://blog.csdn.net/chen77716/article/details/6641477)
+* [深度解析Java 8：JDK1.8 AbstractQueuedSynchronizer的实现分析（上）](http://www.infoq.com/cn/articles/jdk1.8-abstractqueuedsynchronizer)
 
 
 <!--email_off-->
