@@ -559,7 +559,89 @@ public class CASCounter {
 ## 同步队列
 
 
-同步器依赖内部的同步队列（一个 FIFO）的双向队列来完成同步状态的管理，当前线程获取同步状态失败时，同步器会将当前线程以及等待状态等信息构造成一个节点（Node）并将其加入同步队列，同时会阻塞当前线程，当同步状态释放时，会把首节点中的线程唤醒，使其再次尝试获取同步状态。
+同步器依赖内部的同步队列（一个 FIFO）的双向队列来完成同步状态的管理，当前线程获取同步状态失败时，同步器会将当前线程以及等待状态等信息构造成一个节点（Node）并将其加入同步队列，同时会阻塞当前线程，当同步状态释放时，会把首节点中的线程唤醒，使其再次尝试获取同步状态。同步队列的结构如下所示：
+
+![](/images/同步队列.png)
+> 图片来自 http://www.infoq.com/cn/articles/jdk1.8-abstractqueuedsynchronizer
+
+Head 节点本身不保存等待线程的信息，它通过 next 变量指向第一个保存线程等待信息的节点（Node1）。当线程被唤醒之后，会删除 Head 节点，而唤醒线程所在的节点会设置为 Head 节点（Node1 被唤醒之后，Node1会被置为 Head 节点）。下面我们看下 JDK 中同步队列的实现。
+
+### Node 类
+首先看在节点所对应的 Node 类：
+```java
+static final class Node {
+
+    /**
+     * 标志是独占式模式还是共享模式
+     */
+    static final Node SHARED = new Node();
+    static final Node EXCLUSIVE = null;
+
+    /**
+     * 线程等待状态的合法值
+     */
+    static final int CANCELLED = 1;
+    static final int SIGNAL = -1;
+    static final int CONDITION = -2;
+    static final int PROPAGATE = -3;
+
+    /**
+     * 线程状态，合法值为上面 4 个值中的一个
+     */
+    volatile int waitStatus;
+
+    /**
+     * 当前节点的前置节点
+     */
+    volatile Node prev;
+
+    /**
+     * 当前节点的后置节点
+     */
+    volatile Node next;
+
+    /**
+     * 当前节点所关联的线程
+     */
+    volatile Thread thread;
+
+    /**
+     * 指向下一个在某个条件上等待的节点，或者指向 SHARE 节点，标明当前处于共享模式
+     */
+    Node nextWaiter;
+
+    final boolean isShared() {
+        return nextWaiter == SHARED;
+    }
+
+    final Node predecessor() throws NullPointerException {
+        Node p = prev;
+        if (p == null)
+            throw new NullPointerException();
+        else
+            return p;
+    }
+
+    Node() { // Used to establish initial head or SHARED marker
+    }
+
+    Node(Thread thread, Node mode) { // Used by addWaiter
+        this.nextWaiter = mode;
+        this.thread = thread;
+    }
+
+    Node(Thread thread, int waitStatus) { // Used by Condition
+        this.waitStatus = waitStatus;
+        this.thread = thread;
+    }
+}
+```
+在 Node 类中定义了四种等待状态：
+* CANCELED： 1，因为等待超时 （timeout）或者中断（interrupt），节点会被置为取消状态。处于取消状态的节点不会再去竞争锁，也就是说不会再被阻塞。节点会一直保持取消状态，而不会转换为其他状态。处于 CANCELED 的节点会被移出队列，被 GC 回收。
+* SIGNAL： -1，标明当前的后继结点正在或者将要被阻塞（通过使用 LockSupport.pack() 方法）。因为当前的节点被释放（release）或者被取消时（cancel）时，要唤醒它的后继结点（通过 LockSupport.unpark() 方法）。
+* CONDITION： -2，标明当前节点在条件队列中，因为等待某个条件而被阻塞。
+* PROPAGATE： -3，在共享模式下，可以认为资源有多个，因此当前线程被唤醒之后，可能还有剩余的资源可以唤醒其他线程。该状态用来标明后续节点会传播唤醒的操作。需要注意的是只有头节点才可以设置为该状态（This is set (for head node only) in doReleaseShared to ensure propagation continues, even if other operations have since intervened.）。
+* 0：新创建的节点会处于这种状态
 
 
 
