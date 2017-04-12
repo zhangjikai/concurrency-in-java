@@ -638,11 +638,131 @@ static final class Node {
 ```
 在 Node 类中定义了四种等待状态：
 * CANCELED： 1，因为等待超时 （timeout）或者中断（interrupt），节点会被置为取消状态。处于取消状态的节点不会再去竞争锁，也就是说不会再被阻塞。节点会一直保持取消状态，而不会转换为其他状态。处于 CANCELED 的节点会被移出队列，被 GC 回收。
-* SIGNAL： -1，标明当前的后继结点正在或者将要被阻塞（通过使用 LockSupport.pack() 方法）。因为当前的节点被释放（release）或者被取消时（cancel）时，要唤醒它的后继结点（通过 LockSupport.unpark() 方法）。
+* SIGNAL： -1，标明当前的后继结点正在或者将要被阻塞（通过使用 LockSupport.pack 方法）。因为当前的节点被释放（release）或者被取消时（cancel）时，要唤醒它的后继结点（通过 LockSupport.unpark 方法）。
 * CONDITION： -2，标明当前节点在条件队列中，因为等待某个条件而被阻塞。
 * PROPAGATE： -3，在共享模式下，可以认为资源有多个，因此当前线程被唤醒之后，可能还有剩余的资源可以唤醒其他线程。该状态用来标明后续节点会传播唤醒的操作。需要注意的是只有头节点才可以设置为该状态（This is set (for head node only) in doReleaseShared to ensure propagation continues, even if other operations have since intervened.）。
 * 0：新创建的节点会处于这种状态
 
+### 独占锁的获取和释放
+下面我们看下独占锁的获取和释放过程，我们通过 acquire 方法来获取独占锁，下面是方法定义
+```java
+public final void acquire(int arg) {
+    if (!tryAcquire(arg) &&
+        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
+        selfInterrupt();
+}
+```
+acquire 会首先调用 tryAcquire 方法来获得锁，这个方法需要我们来实现，这个在前面已经提过了。如果没有获取锁，会调用 addWaiter 方法会创建一个和当前线程关联的节点追加到等待队列的尾部，我们调用 addWaiter 时传入的是 Node.EXCLUSIVE，表明当前是独占模式。下面是 addWaiter 的具体实现
+```java
+private Node addWaiter(Node mode) {
+    Node node = new Node(Thread.currentThread(), mode);
+    // tail 指向等待队列的尾节点
+    Node pred = tail;
+    // Try the fast path of enq; backup to full enq on failure
+    if (pred != null) {
+        node.prev = pred;
+        if (compareAndSetTail(pred, node)) {
+            pred.next = node;
+            return node;
+        }
+    }
+    enq(node);
+    return node;
+}
+```
+addWaiter 方法会首先调用 if 方法，来判断能否成功将节点添加到队列尾部，如果添加失败，再调用 enq 方法（使用循环不断重试）进行添加，下面是 enq 方法的实现：
+```java
+private Node enq(final Node node) {
+    for (;;) {
+        Node t = tail;
+        // 同步队列采用的懒初始化（lazily initialized）的方式，
+        // 初始时 head 和 tail 都会被设置为 null，当一次被访问时
+        // 才会创建 head 对象，并把尾指针指向 head。
+        if (t == null) { // Must initialize
+            if (compareAndSetHead(new Node()))
+                tail = head;
+        } else {
+            node.prev = t;
+            if (compareAndSetTail(t, node)) {
+                t.next = node;
+                return t;
+            }
+        }
+    }
+}
+```
+addWaiter 仅仅是将节点加到了等待队列的末尾，并没有阻塞线程，线程阻塞的操作是在 acquireQueued 方法中完成的，下面是 acquireQueued 的实现：
+```java
+final boolean acquireQueued(final Node node, int arg) {
+    boolean failed = true;
+    try {
+        boolean interrupted = false;
+        for (;;) {
+            final Node p = node.predecessor();
+            // 如果当前节点的前继节点是 head，就使用自旋（循环）的方式不断请求锁
+            if (p == head && tryAcquire(arg)) {
+                // 成功获得锁，将当前节点置为 head 节点，同时删除原 head 节点
+                setHead(node);
+                p.next = null; // help GC
+                failed = false;
+                return interrupted;
+            }
+
+            // shouldParkAfterFailedAcquire 检查是否可以挂起线程，
+            // 如果可以挂起进程，会调用 parkAndCheckInterrupt 挂起线程，
+            // 如果 parkAndCheckInterrupt 返回 true，表明当前线程是因为中断而退出挂起状态的，
+            // 所以要将 interrupted 设为 true，表明当前线程被中断过
+            if (shouldParkAfterFailedAcquire(p, node) &&
+                parkAndCheckInterrupt())
+                interrupted = true;
+        }
+    } finally {
+        if (failed)
+            cancelAcquire(node);
+    }
+}
+```
+acquireQueued 会首先检查当前节点的前继节点是否为 head，如果为 head，将使用自旋的方式不断的请求锁，如果不是 head，则调用 shouldParkAfterFailedAcquire 查看是否应该挂起当前节点关联的线程，下面是 shouldParkAfterFailedAcquire 的实现：
+```java
+private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
+    // 当前节点的前继节点的等待状态
+    int ws = pred.waitStatus;
+    // 如果前继节点的等待状态为 SIGNAL 我们就可以将当前节点对应的线程挂起
+    if (ws == Node.SIGNAL)
+        return true;
+    if (ws > 0) {
+        // ws 大于 0，表明当前线程的前继节点处于 CANCELED 的状态，
+        // 所以我们需要从当前节点开始往前查找，直到找到第一个不为
+        // CAECELED  状态的节点
+        do {
+            node.prev = pred = pred.prev;
+        } while (pred.waitStatus > 0);
+        pred.next = node;
+    } else {
+        /*
+         * waitStatus must be 0 or PROPAGATE.  Indicate that we
+         * need a signal, but don't park yet.  Caller will need to
+         * retry to make sure it cannot acquire before parking.
+         */
+        compareAndSetWaitStatus(pred, ws, Node.SIGNAL);
+    }
+    return false;
+}
+```
+shouldParkAfterFailedAcquire 会检查前继节点的等待状态，如果前继节点状态为 SIGNAL，则可以将当前节点关联的线程挂起，如果不是 SIGNAL，会做一些其他的操作，在当前循环中不会挂起线程。如果确定了可以挂起线程，就调用 parkAndCheckInterrupt 方法对线程进行阻塞：
+```java
+private final boolean parkAndCheckInterrupt() {
+    // 挂起当前线程
+    LockSupport.park(this);
+    // 可以通过调用 interrupt 方法使线程退出 park 状态，
+    // 为了使线程在后面的循环中还可以响应中断，会重置线程的中断状态。
+    // 这里使用 interrupted 会先返回线程当前的中断状态，然后将中断状态重置为 false，
+    // 线程的中断状态会返回给上层调用函数，在线程获得锁后，
+    // 如果发现线程曾被中断过，会将中断状态重新设为 true
+    return Thread.interrupted();
+}
+```
+上面就是获取互斥锁的整个流程。
 
 
 ## 参考文章
