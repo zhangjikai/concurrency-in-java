@@ -278,7 +278,7 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <div id="anchor-navigation-ex-navbar"><i class="fa fa-anchor"></i><ul><li><a href="#&#x961F;&#x5217;&#x540C;&#x6B65;&#x5668;">&#x961F;&#x5217;&#x540C;&#x6B65;&#x5668;</a></li><ul><li><a href="#&#x524D;&#x8A00;">&#x524D;&#x8A00;</a></li><li><a href="#aqs-&#x548C;-synchronized">AQS &#x548C; synchronized</a></li><li><a href="#&#x57FA;&#x672C;&#x4F7F;&#x7528;">&#x57FA;&#x672C;&#x4F7F;&#x7528;</a></li><li><a href="#cas-&#x64CD;&#x4F5C;">CAS &#x64CD;&#x4F5C;</a></li><li><a href="#&#x540C;&#x6B65;&#x961F;&#x5217;">&#x540C;&#x6B65;&#x961F;&#x5217;</a></li><li><a href="#&#x53C2;&#x8003;&#x6587;&#x7AE0;">&#x53C2;&#x8003;&#x6587;&#x7AE0;</a></li></ul></ul></div><a href="#&#x961F;&#x5217;&#x540C;&#x6B65;&#x5668;" id="anchorNavigationExGoTop"><i class="fa fa-arrow-up"></i></a><h1 id="&#x961F;&#x5217;&#x540C;&#x6B65;&#x5668;"><a name="&#x961F;&#x5217;&#x540C;&#x6B65;&#x5668;" class="anchor-navigation-ex-anchor" href="#&#x961F;&#x5217;&#x540C;&#x6B65;&#x5668;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x961F;&#x5217;&#x540C;&#x6B65;&#x5668;</h1>
+                                <div id="anchor-navigation-ex-navbar"><i class="fa fa-anchor"></i><ul><li><a href="#&#x961F;&#x5217;&#x540C;&#x6B65;&#x5668;">&#x961F;&#x5217;&#x540C;&#x6B65;&#x5668;</a></li><ul><li><a href="#&#x524D;&#x8A00;">&#x524D;&#x8A00;</a></li><li><a href="#aqs-&#x548C;-synchronized">AQS &#x548C; synchronized</a></li><li><a href="#&#x57FA;&#x672C;&#x4F7F;&#x7528;">&#x57FA;&#x672C;&#x4F7F;&#x7528;</a></li><li><a href="#cas-&#x64CD;&#x4F5C;">CAS &#x64CD;&#x4F5C;</a></li><li><a href="#&#x540C;&#x6B65;&#x961F;&#x5217;">&#x540C;&#x6B65;&#x961F;&#x5217;</a></li><ul><li><a href="#node-&#x7C7B;">Node &#x7C7B;</a></li></ul><li><a href="#&#x53C2;&#x8003;&#x6587;&#x7AE0;">&#x53C2;&#x8003;&#x6587;&#x7AE0;</a></li></ul></ul></div><a href="#&#x961F;&#x5217;&#x540C;&#x6B65;&#x5668;" id="anchorNavigationExGoTop"><i class="fa fa-arrow-up"></i></a><h1 id="&#x961F;&#x5217;&#x540C;&#x6B65;&#x5668;"><a name="&#x961F;&#x5217;&#x540C;&#x6B65;&#x5668;" class="anchor-navigation-ex-anchor" href="#&#x961F;&#x5217;&#x540C;&#x6B65;&#x5668;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x961F;&#x5217;&#x540C;&#x6B65;&#x5668;</h1>
 <!--email_off-->
 <!-- toc -->
 <ul>
@@ -286,7 +286,10 @@
 <li><a href="#aqs-&#x548C;-synchronized">AQS &#x548C; synchronized</a></li>
 <li><a href="#&#x57FA;&#x672C;&#x4F7F;&#x7528;">&#x57FA;&#x672C;&#x4F7F;&#x7528;</a></li>
 <li><a href="#cas-&#x64CD;&#x4F5C;">CAS &#x64CD;&#x4F5C;</a></li>
-<li><a href="#&#x540C;&#x6B65;&#x961F;&#x5217;">&#x540C;&#x6B65;&#x961F;&#x5217;</a></li>
+<li><a href="#&#x540C;&#x6B65;&#x961F;&#x5217;">&#x540C;&#x6B65;&#x961F;&#x5217;</a><ul>
+<li><a href="#node-&#x7C7B;">Node &#x7C7B;</a></li>
+</ul>
+</li>
 <li><a href="#&#x53C2;&#x8003;&#x6587;&#x7AE0;">&#x53C2;&#x8003;&#x6587;&#x7AE0;</a></li>
 </ul>
 <!-- tocstop -->
@@ -874,7 +877,89 @@ unsafe<span class="token punctuation">.</span><span class="token function">compa
 <span class="token punctuation">}</span>
 </code></pre>
 <h2 id="&#x540C;&#x6B65;&#x961F;&#x5217;"><a name="&#x540C;&#x6B65;&#x961F;&#x5217;" class="anchor-navigation-ex-anchor" href="#&#x540C;&#x6B65;&#x961F;&#x5217;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x540C;&#x6B65;&#x961F;&#x5217;</h2>
-<p>&#x540C;&#x6B65;&#x5668;&#x4F9D;&#x8D56;&#x5185;&#x90E8;&#x7684;&#x540C;&#x6B65;&#x961F;&#x5217;&#xFF08;&#x4E00;&#x4E2A; FIFO&#xFF09;&#x7684;&#x53CC;&#x5411;&#x961F;&#x5217;&#x6765;&#x5B8C;&#x6210;&#x540C;&#x6B65;&#x72B6;&#x6001;&#x7684;&#x7BA1;&#x7406;&#xFF0C;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x83B7;&#x53D6;&#x540C;&#x6B65;&#x72B6;&#x6001;&#x5931;&#x8D25;&#x65F6;&#xFF0C;&#x540C;&#x6B65;&#x5668;&#x4F1A;&#x5C06;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x4EE5;&#x53CA;&#x7B49;&#x5F85;&#x72B6;&#x6001;&#x7B49;&#x4FE1;&#x606F;&#x6784;&#x9020;&#x6210;&#x4E00;&#x4E2A;&#x8282;&#x70B9;&#xFF08;Node&#xFF09;&#x5E76;&#x5C06;&#x5176;&#x52A0;&#x5165;&#x540C;&#x6B65;&#x961F;&#x5217;&#xFF0C;&#x540C;&#x65F6;&#x4F1A;&#x963B;&#x585E;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#xFF0C;&#x5F53;&#x540C;&#x6B65;&#x72B6;&#x6001;&#x91CA;&#x653E;&#x65F6;&#xFF0C;&#x4F1A;&#x628A;&#x9996;&#x8282;&#x70B9;&#x4E2D;&#x7684;&#x7EBF;&#x7A0B;&#x5524;&#x9192;&#xFF0C;&#x4F7F;&#x5176;&#x518D;&#x6B21;&#x5C1D;&#x8BD5;&#x83B7;&#x53D6;&#x540C;&#x6B65;&#x72B6;&#x6001;&#x3002;</p>
+<p>&#x540C;&#x6B65;&#x5668;&#x4F9D;&#x8D56;&#x5185;&#x90E8;&#x7684;&#x540C;&#x6B65;&#x961F;&#x5217;&#xFF08;&#x4E00;&#x4E2A; FIFO&#xFF09;&#x7684;&#x53CC;&#x5411;&#x961F;&#x5217;&#x6765;&#x5B8C;&#x6210;&#x540C;&#x6B65;&#x72B6;&#x6001;&#x7684;&#x7BA1;&#x7406;&#xFF0C;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x83B7;&#x53D6;&#x540C;&#x6B65;&#x72B6;&#x6001;&#x5931;&#x8D25;&#x65F6;&#xFF0C;&#x540C;&#x6B65;&#x5668;&#x4F1A;&#x5C06;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x4EE5;&#x53CA;&#x7B49;&#x5F85;&#x72B6;&#x6001;&#x7B49;&#x4FE1;&#x606F;&#x6784;&#x9020;&#x6210;&#x4E00;&#x4E2A;&#x8282;&#x70B9;&#xFF08;Node&#xFF09;&#x5E76;&#x5C06;&#x5176;&#x52A0;&#x5165;&#x540C;&#x6B65;&#x961F;&#x5217;&#xFF0C;&#x540C;&#x65F6;&#x4F1A;&#x963B;&#x585E;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#xFF0C;&#x5F53;&#x540C;&#x6B65;&#x72B6;&#x6001;&#x91CA;&#x653E;&#x65F6;&#xFF0C;&#x4F1A;&#x628A;&#x9996;&#x8282;&#x70B9;&#x4E2D;&#x7684;&#x7EBF;&#x7A0B;&#x5524;&#x9192;&#xFF0C;&#x4F7F;&#x5176;&#x518D;&#x6B21;&#x5C1D;&#x8BD5;&#x83B7;&#x53D6;&#x540C;&#x6B65;&#x72B6;&#x6001;&#x3002;&#x540C;&#x6B65;&#x961F;&#x5217;&#x7684;&#x7ED3;&#x6784;&#x5982;&#x4E0B;&#x6240;&#x793A;&#xFF1A;</p>
+<p><img src="images/&#x540C;&#x6B65;&#x961F;&#x5217;.png" alt=""></p>
+<blockquote>
+<p>&#x56FE;&#x7247;&#x6765;&#x81EA; <a href="http://www.infoq.com/cn/articles/jdk1.8-abstractqueuedsynchronizer" target="_blank">http://www.infoq.com/cn/articles/jdk1.8-abstractqueuedsynchronizer</a></p>
+</blockquote>
+<p>Head &#x8282;&#x70B9;&#x672C;&#x8EAB;&#x4E0D;&#x4FDD;&#x5B58;&#x7B49;&#x5F85;&#x7EBF;&#x7A0B;&#x7684;&#x4FE1;&#x606F;&#xFF0C;&#x5B83;&#x901A;&#x8FC7; next &#x53D8;&#x91CF;&#x6307;&#x5411;&#x7B2C;&#x4E00;&#x4E2A;&#x4FDD;&#x5B58;&#x7EBF;&#x7A0B;&#x7B49;&#x5F85;&#x4FE1;&#x606F;&#x7684;&#x8282;&#x70B9;&#xFF08;Node1&#xFF09;&#x3002;&#x5F53;&#x7EBF;&#x7A0B;&#x88AB;&#x5524;&#x9192;&#x4E4B;&#x540E;&#xFF0C;&#x4F1A;&#x5220;&#x9664; Head &#x8282;&#x70B9;&#xFF0C;&#x800C;&#x5524;&#x9192;&#x7EBF;&#x7A0B;&#x6240;&#x5728;&#x7684;&#x8282;&#x70B9;&#x4F1A;&#x8BBE;&#x7F6E;&#x4E3A; Head &#x8282;&#x70B9;&#xFF08;Node1 &#x88AB;&#x5524;&#x9192;&#x4E4B;&#x540E;&#xFF0C;Node1&#x4F1A;&#x88AB;&#x7F6E;&#x4E3A; Head &#x8282;&#x70B9;&#xFF09;&#x3002;&#x4E0B;&#x9762;&#x6211;&#x4EEC;&#x770B;&#x4E0B; JDK &#x4E2D;&#x540C;&#x6B65;&#x961F;&#x5217;&#x7684;&#x5B9E;&#x73B0;&#x3002;</p>
+<h3 id="node-&#x7C7B;"><a name="node-&#x7C7B;" class="anchor-navigation-ex-anchor" href="#node-&#x7C7B;"><i class="fa fa-link" aria-hidden="true"></i></a>Node &#x7C7B;</h3>
+<p>&#x9996;&#x5148;&#x770B;&#x5728;&#x8282;&#x70B9;&#x6240;&#x5BF9;&#x5E94;&#x7684; Node &#x7C7B;&#xFF1A;</p>
+<pre class="language-"><code class="lang-java"><span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token keyword">class</span> <span class="token class-name">Node</span> <span class="token punctuation">{</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * &#x6807;&#x5FD7;&#x662F;&#x72EC;&#x5360;&#x5F0F;&#x6A21;&#x5F0F;&#x8FD8;&#x662F;&#x5171;&#x4EAB;&#x6A21;&#x5F0F;
+     */</span>
+    <span class="token keyword">static</span> <span class="token keyword">final</span> Node SHARED <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Node</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">static</span> <span class="token keyword">final</span> Node EXCLUSIVE <span class="token operator">=</span> null<span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * &#x7EBF;&#x7A0B;&#x7B49;&#x5F85;&#x72B6;&#x6001;&#x7684;&#x5408;&#x6CD5;&#x503C;
+     */</span>
+    <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token keyword">int</span> CANCELLED <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token keyword">int</span> SIGNAL <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token keyword">int</span> CONDITION <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">;</span>
+    <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token keyword">int</span> PROPAGATE <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">3</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * &#x7EBF;&#x7A0B;&#x72B6;&#x6001;&#xFF0C;&#x5408;&#x6CD5;&#x503C;&#x4E3A;&#x4E0A;&#x9762; 4 &#x4E2A;&#x503C;&#x4E2D;&#x7684;&#x4E00;&#x4E2A;
+     */</span>
+    <span class="token keyword">volatile</span> <span class="token keyword">int</span> waitStatus<span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * &#x5F53;&#x524D;&#x8282;&#x70B9;&#x7684;&#x524D;&#x7F6E;&#x8282;&#x70B9;
+     */</span>
+    <span class="token keyword">volatile</span> Node prev<span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * &#x5F53;&#x524D;&#x8282;&#x70B9;&#x7684;&#x540E;&#x7F6E;&#x8282;&#x70B9;
+     */</span>
+    <span class="token keyword">volatile</span> Node next<span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * &#x5F53;&#x524D;&#x8282;&#x70B9;&#x6240;&#x5173;&#x8054;&#x7684;&#x7EBF;&#x7A0B;
+     */</span>
+    <span class="token keyword">volatile</span> Thread thread<span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * &#x6307;&#x5411;&#x4E0B;&#x4E00;&#x4E2A;&#x5728;&#x67D0;&#x4E2A;&#x6761;&#x4EF6;&#x4E0A;&#x7B49;&#x5F85;&#x7684;&#x8282;&#x70B9;&#xFF0C;&#x6216;&#x8005;&#x6307;&#x5411; SHARE &#x8282;&#x70B9;&#xFF0C;&#x6807;&#x660E;&#x5F53;&#x524D;&#x5904;&#x4E8E;&#x5171;&#x4EAB;&#x6A21;&#x5F0F;
+     */</span>
+    Node nextWaiter<span class="token punctuation">;</span>
+
+    <span class="token keyword">final</span> <span class="token keyword">boolean</span> <span class="token function">isShared</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> nextWaiter <span class="token operator">==</span> SHARED<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">final</span> Node <span class="token function">predecessor</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> NullPointerException <span class="token punctuation">{</span>
+        Node p <span class="token operator">=</span> prev<span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>p <span class="token operator">==</span> null<span class="token punctuation">)</span>
+            <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">NullPointerException</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">else</span>
+            <span class="token keyword">return</span> p<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token function">Node</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment" spellcheck="true">// Used to establish initial head or SHARED marker</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token function">Node</span><span class="token punctuation">(</span>Thread thread<span class="token punctuation">,</span> Node mode<span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment" spellcheck="true">// Used by addWaiter</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>nextWaiter <span class="token operator">=</span> mode<span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>thread <span class="token operator">=</span> thread<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token function">Node</span><span class="token punctuation">(</span>Thread thread<span class="token punctuation">,</span> <span class="token keyword">int</span> waitStatus<span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment" spellcheck="true">// Used by Condition</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>waitStatus <span class="token operator">=</span> waitStatus<span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>thread <span class="token operator">=</span> thread<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>&#x5728; Node &#x7C7B;&#x4E2D;&#x5B9A;&#x4E49;&#x4E86;&#x56DB;&#x79CD;&#x7B49;&#x5F85;&#x72B6;&#x6001;&#xFF1A;</p>
+<ul>
+<li>CANCELED&#xFF1A; 1&#xFF0C;&#x56E0;&#x4E3A;&#x7B49;&#x5F85;&#x8D85;&#x65F6; &#xFF08;timeout&#xFF09;&#x6216;&#x8005;&#x4E2D;&#x65AD;&#xFF08;interrupt&#xFF09;&#xFF0C;&#x8282;&#x70B9;&#x4F1A;&#x88AB;&#x7F6E;&#x4E3A;&#x53D6;&#x6D88;&#x72B6;&#x6001;&#x3002;&#x5904;&#x4E8E;&#x53D6;&#x6D88;&#x72B6;&#x6001;&#x7684;&#x8282;&#x70B9;&#x4E0D;&#x4F1A;&#x518D;&#x53BB;&#x7ADE;&#x4E89;&#x9501;&#xFF0C;&#x4E5F;&#x5C31;&#x662F;&#x8BF4;&#x4E0D;&#x4F1A;&#x518D;&#x88AB;&#x963B;&#x585E;&#x3002;&#x8282;&#x70B9;&#x4F1A;&#x4E00;&#x76F4;&#x4FDD;&#x6301;&#x53D6;&#x6D88;&#x72B6;&#x6001;&#xFF0C;&#x800C;&#x4E0D;&#x4F1A;&#x8F6C;&#x6362;&#x4E3A;&#x5176;&#x4ED6;&#x72B6;&#x6001;&#x3002;&#x5904;&#x4E8E; CANCELED &#x7684;&#x8282;&#x70B9;&#x4F1A;&#x88AB;&#x79FB;&#x51FA;&#x961F;&#x5217;&#xFF0C;&#x88AB; GC &#x56DE;&#x6536;&#x3002;</li>
+<li>SIGNAL&#xFF1A; -1&#xFF0C;&#x6807;&#x660E;&#x5F53;&#x524D;&#x7684;&#x540E;&#x7EE7;&#x7ED3;&#x70B9;&#x6B63;&#x5728;&#x6216;&#x8005;&#x5C06;&#x8981;&#x88AB;&#x963B;&#x585E;&#xFF08;&#x901A;&#x8FC7;&#x4F7F;&#x7528; LockSupport.pack() &#x65B9;&#x6CD5;&#xFF09;&#x3002;&#x56E0;&#x4E3A;&#x5F53;&#x524D;&#x7684;&#x8282;&#x70B9;&#x88AB;&#x91CA;&#x653E;&#xFF08;release&#xFF09;&#x6216;&#x8005;&#x88AB;&#x53D6;&#x6D88;&#x65F6;&#xFF08;cancel&#xFF09;&#x65F6;&#xFF0C;&#x8981;&#x5524;&#x9192;&#x5B83;&#x7684;&#x540E;&#x7EE7;&#x7ED3;&#x70B9;&#xFF08;&#x901A;&#x8FC7; LockSupport.unpark() &#x65B9;&#x6CD5;&#xFF09;&#x3002;</li>
+<li>CONDITION&#xFF1A; -2&#xFF0C;&#x6807;&#x660E;&#x5F53;&#x524D;&#x8282;&#x70B9;&#x5728;&#x6761;&#x4EF6;&#x961F;&#x5217;&#x4E2D;&#xFF0C;&#x56E0;&#x4E3A;&#x7B49;&#x5F85;&#x67D0;&#x4E2A;&#x6761;&#x4EF6;&#x800C;&#x88AB;&#x963B;&#x585E;&#x3002;</li>
+<li>PROPAGATE&#xFF1A; -3&#xFF0C;&#x5728;&#x5171;&#x4EAB;&#x6A21;&#x5F0F;&#x4E0B;&#xFF0C;&#x53EF;&#x4EE5;&#x8BA4;&#x4E3A;&#x8D44;&#x6E90;&#x6709;&#x591A;&#x4E2A;&#xFF0C;&#x56E0;&#x6B64;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x88AB;&#x5524;&#x9192;&#x4E4B;&#x540E;&#xFF0C;&#x53EF;&#x80FD;&#x8FD8;&#x6709;&#x5269;&#x4F59;&#x7684;&#x8D44;&#x6E90;&#x53EF;&#x4EE5;&#x5524;&#x9192;&#x5176;&#x4ED6;&#x7EBF;&#x7A0B;&#x3002;&#x8BE5;&#x72B6;&#x6001;&#x7528;&#x6765;&#x6807;&#x660E;&#x540E;&#x7EED;&#x8282;&#x70B9;&#x4F1A;&#x4F20;&#x64AD;&#x5524;&#x9192;&#x7684;&#x64CD;&#x4F5C;&#x3002;&#x9700;&#x8981;&#x6CE8;&#x610F;&#x7684;&#x662F;&#x53EA;&#x6709;&#x5934;&#x8282;&#x70B9;&#x624D;&#x53EF;&#x4EE5;&#x8BBE;&#x7F6E;&#x4E3A;&#x8BE5;&#x72B6;&#x6001;&#xFF08;This is set (for head node only) in doReleaseShared to ensure propagation continues, even if other operations have since intervened.&#xFF09;&#x3002;</li>
+<li>0&#xFF1A;&#x65B0;&#x521B;&#x5EFA;&#x7684;&#x8282;&#x70B9;&#x4F1A;&#x5904;&#x4E8E;&#x8FD9;&#x79CD;&#x72B6;&#x6001;</li>
+</ul>
 <h2 id="&#x53C2;&#x8003;&#x6587;&#x7AE0;"><a name="&#x53C2;&#x8003;&#x6587;&#x7AE0;" class="anchor-navigation-ex-anchor" href="#&#x53C2;&#x8003;&#x6587;&#x7AE0;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x53C2;&#x8003;&#x6587;&#x7AE0;</h2>
 <ul>
 <li><a href="http://download.csdn.net/detail/u011898232/9548575" target="_blank">Java &#x5E76;&#x53D1;&#x7F16;&#x7A0B;&#x7684;&#x827A;&#x672F;</a></li>
@@ -924,7 +1009,7 @@ unsafe<span class="token punctuation">.</span><span class="token function">compa
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"AbstractQueuedSynchronizer","level":"1.3.2","depth":2,"previous":{"title":"Lock 框架","level":"1.3.1","depth":2,"path":"Lock框架.md","ref":"Lock框架.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-lunr","-search","-highlight","-livereload","search-plus@^0.0.11","simple-page-toc@^0.1.1","github@^2.0.0","edit-link@^2.0.2","prism@^2.1.0","prism-themes@^0.0.2","anchors@^0.7.1","-expandable-chapters-small@^0.1.7","duoshuo","3-ba","sitemap-general@^0.1.1","anchor-navigation-ex@0.1.8","favicon@^0.0.2","3-ba@^0.9.0"],"root":".","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prism-themes/themes/prism-base16-ateliersulphurpool.light.css"]},"github":{"url":"https://github.com/zhangjikai/concurrency-in-java"},"simple-page-toc":{"maxDepth":4,"skipFirstH1":true},"duoshuo":{"short_name":"zhangjkblog","theme":"default"},"donate":{"wechat":"https://zhangjikai.com/resource/weixin.png","alipay":"https://zhangjikai.com/resource/alipay.png","title":"","button":"赏","alipayText":"支付宝打赏","wechatText":"微信打赏"},"sitemap-general":{"prefix":"http://con.zhangjikai.com"},"fontsettings":{"theme":"white","family":"sans","size":2},"anchor-navigation-ex":{"isRewritePageTitle":false,"tocLevel1Icon":"fa fa-hand-o-right","tocLevel2Icon":"fa fa-hand-o-right","tocLevel3Icon":"fa fa-hand-o-right"},"favicon":{"shortcut":"favicon.ico","bookmark":"favicon.ico"},"prism-themes":{},"3-ba":{"configuration":"auto","token":"ff100361cdce95dd4c8fb96b4009f7bc"},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":true,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"label":"Edit This Page","base":"https://github.com/zhangjikai/concurrency-in-java/edit/master"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true},"anchors":{},"search-plus":{}},"theme":"default","author":"zhangjikai","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Java 并发编程","language":"zh-hans","output.name":"site","links":{"sidebar":{"Home":"http://www.zhangjikai.com"}},"gitbook":"3.2.2","description":"Java 并发编程学习笔记"},"file":{"path":"AbstractQueuedSynchronizer.md","mtime":"2017-04-09T12:06:26.694Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-04-09T12:07:33.093Z"},"basePath":".","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"AbstractQueuedSynchronizer","level":"1.3.2","depth":2,"previous":{"title":"Lock 框架","level":"1.3.1","depth":2,"path":"Lock框架.md","ref":"Lock框架.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-lunr","-search","-highlight","-livereload","search-plus@^0.0.11","simple-page-toc@^0.1.1","github@^2.0.0","edit-link@^2.0.2","prism@^2.1.0","prism-themes@^0.0.2","anchors@^0.7.1","-expandable-chapters-small@^0.1.7","duoshuo","3-ba","sitemap-general@^0.1.1","anchor-navigation-ex@0.1.8","favicon@^0.0.2","3-ba@^0.9.0"],"root":".","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prism-themes/themes/prism-base16-ateliersulphurpool.light.css"]},"github":{"url":"https://github.com/zhangjikai/concurrency-in-java"},"simple-page-toc":{"maxDepth":4,"skipFirstH1":true},"duoshuo":{"short_name":"zhangjkblog","theme":"default"},"donate":{"wechat":"https://zhangjikai.com/resource/weixin.png","alipay":"https://zhangjikai.com/resource/alipay.png","title":"","button":"赏","alipayText":"支付宝打赏","wechatText":"微信打赏"},"sitemap-general":{"prefix":"http://con.zhangjikai.com"},"fontsettings":{"theme":"white","family":"sans","size":2},"anchor-navigation-ex":{"isRewritePageTitle":false,"tocLevel1Icon":"fa fa-hand-o-right","tocLevel2Icon":"fa fa-hand-o-right","tocLevel3Icon":"fa fa-hand-o-right"},"favicon":{"shortcut":"favicon.ico","bookmark":"favicon.ico"},"prism-themes":{},"3-ba":{"configuration":"auto","token":"ff100361cdce95dd4c8fb96b4009f7bc"},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":true,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"label":"Edit This Page","base":"https://github.com/zhangjikai/concurrency-in-java/edit/master"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true},"anchors":{},"search-plus":{}},"theme":"default","author":"zhangjikai","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Java 并发编程","language":"zh-hans","output.name":"site","links":{"sidebar":{"Home":"http://www.zhangjikai.com"}},"gitbook":"3.2.2","description":"Java 并发编程学习笔记"},"file":{"path":"AbstractQueuedSynchronizer.md","mtime":"2017-04-12T12:38:33.541Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-04-12T12:38:53.459Z"},"basePath":".","book":{"language":""}});
         });
     </script>
 </div>
