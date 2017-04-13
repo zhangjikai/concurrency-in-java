@@ -644,12 +644,23 @@ static final class Node {
 * 0：新创建的节点会处于这种状态
 
 ### 独占锁的获取和释放
-下面我们看下独占锁的获取和释放过程，我们通过 acquire 方法来获取独占锁，下面是方法定义
+我们首先看下独占锁的获取和释放过程
+
+**独占锁获取**
+
+下面是获取独占锁的流程图：
+![](images/获取独占锁.png)
+
+我们通过 acquire 方法来获取独占锁，下面是方法定义
 ```java
 public final void acquire(int arg) {
-    if (!tryAcquire(arg) &&
-        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
+    // 首先尝试获取锁，如果获取失败，会先调用 addWaiter 方法将创建节点并追加到队列尾部
+    // 然后调用 acquireQueued 阻塞或者循环尝试获取锁
+    if (!tryAcquire(arg) && acquireQueued(addWaiter(Node.EXCLUSIVE), arg)){
+        // 在 acquireQueued 中，如果线程是因为中断而退出的阻塞状态会返回 true
+        // 这里的 selfInterrupt 主要是为了恢复线程的中断状态
         selfInterrupt();
+    }
 }
 ```
 acquire 会首先调用 tryAcquire 方法来获得锁，这个方法需要我们来实现，这个在前面已经提过了。如果没有获取锁，会调用 addWaiter 方法会创建一个和当前线程关联的节点追加到等待队列的尾部，我们调用 addWaiter 时传入的是 Node.EXCLUSIVE，表明当前是独占模式。下面是 addWaiter 的具体实现
@@ -762,7 +773,54 @@ private final boolean parkAndCheckInterrupt() {
     return Thread.interrupted();
 }
 ```
-上面就是获取互斥锁的整个流程。
+
+**独占锁释放**
+
+下面是释放独占锁的流程：
+![](images/释放独占锁.png)
+
+通过 release 方法，我们可以释放互斥锁。下面是 release 方法的实现：
+```java
+public final boolean release(int arg) {
+    if (tryRelease(arg)) {
+        Node h = head;
+        // waitStatus 为 0，证明是初始化的空队或者后继结点已经被唤醒了
+        if (h != null && h.waitStatus != 0)
+            unparkSuccessor(h);
+        return true;
+    }
+    return false;
+}
+```
+在独占模式下释放锁时，是没有其他线程竞争的，所以处理会简单一些。首先尝试释放锁，如果失败就直接返回（失败不是因为多线程竞争，而是线程本身就不拥有锁）。如果成功的话，会检查 h 的状态，然后调用 unparkSuccessor 方法来唤醒后续线程。下面是 unparkSuccessor 的实现：
+```java
+private void unparkSuccessor(Node node) {
+
+    int ws = node.waitStatus;
+    // 将 head 节点的状态置为 0，表明当前节点的后续节点已经被唤醒了，
+    // 不需要再次唤醒，修改 ws 状态主要作用于 release 的判断
+    if (ws < 0)
+        compareAndSetWaitStatus(node, ws, 0);
+
+    /*
+     * Thread to unpark is held in successor, which is normally
+     * just the next node.  But if cancelled or apparently null,
+     * traverse backwards from tail to find the actual
+     * non-cancelled successor.
+     */
+    Node s = node.next;
+    if (s == null || s.waitStatus > 0) {
+        s = null;
+        for (Node t = tail; t != null && t != node; t = t.prev)
+            if (t.waitStatus <= 0)
+                s = t;
+    }
+    if (s != null)
+        LockSupport.unpark(s.thread);
+}
+```
+在 unparkSuccessor 方法中，如果发现头节点的后继结点为 null 或者处于 CANCELED 状态，会从尾部往前找（在节点存在的前提下，这样一定能找到）离头节点最近的需要唤醒的节点，然后唤醒该节点。
+
 
 
 ## 参考文章
@@ -773,6 +831,9 @@ private final boolean parkAndCheckInterrupt() {
 * [ReentrantLock的lock-unlock流程详解](http://blog.csdn.net/luonanqin/article/details/41871909)
 * [深入JVM锁机制2-Lock](http://blog.csdn.net/chen77716/article/details/6641477)
 * [深度解析Java 8：JDK1.8 AbstractQueuedSynchronizer的实现分析（上）](http://www.infoq.com/cn/articles/jdk1.8-abstractqueuedsynchronizer)
-
+* http://www.cnblogs.com/zhanjindong/p/java-concurrent-package-aqs-AbstractQueuedSynchronizer.html
+* http://www.infoq.com/cn/articles/jdk1.8-abstractqueuedsynchronizer
+* https://my.oschina.net/xianggao/blog/532709
+* http://www.javarticles.com/2012/10/abstractqueuedsynchronizer-aqs.html
 
 <!--email_off-->
