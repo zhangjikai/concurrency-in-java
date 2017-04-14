@@ -821,6 +821,129 @@ private void unparkSuccessor(Node node) {
 ```
 在 unparkSuccessor 方法中，如果发现头节点的后继结点为 null 或者处于 CANCELED 状态，会从尾部往前找（在节点存在的前提下，这样一定能找到）离头节点最近的需要唤醒的节点，然后唤醒该节点。
 
+### 共享锁获取和释放
+
+独占锁的原理比较容易理解，但是共享锁就有点绕了。在共享模式下，线程获取不到锁时，和独占模式的处理一样，首先为获取不到锁的线程创建一个节点，放到等待队列的尾部，然后检查当前节点的前继节点是否为 head，如果是 head，就尝试获取锁，如果获取不到锁，然后进入是否需要挂起的逻辑中，前面这些和独占锁的处理类似，但是当等待队列中的节点获得了共享锁之后，处理方式有很大的不同。当等待队列中的节点获取了共享锁之后，处理方式有很大的不同。如果想要理清共享锁的工作过程，必须将共享锁的获取和释放结合起来看。所以这里我们先看下共享锁的释放过程，只有明白了释放过程都做了哪些工作，才能更好的理解获取锁的过程。
+
+**共享锁释放**
+
+通过 releaseShared 方法会释放共享锁，下面是具体的实现：
+```java
+public final boolean releaseShared(int releases) {
+    if (tryReleaseShared(arg)) {
+        doReleaseShared();
+        return true;
+    }
+    return false;
+}
+```
+releases 是要释放的共享资源数量，其中 tryReleaseShared 的方法由我们自己重写，该方法的主要功能就是修改共享资源的数量（state + releases），因为可能会有多个线程同时释放资源，所以实现的时候，一般采用循环加 CAS 操作的方式，如下面的形式：
+```java
+protected boolean tryReleaseShared(int releases) {
+    // 释放共享资源，因为可能有多个线程同时执行，所以需要使用 CAS 操作来修改资源总数。
+    for (;;) {
+        int lastCount = getState();
+        int newCount = lastCount + releases;
+        if (compareAndSetState(lastCount, newCount)) {
+            return true;
+        }
+    }
+}
+```
+当共享资源数量修改了之后，会调用 doReleaseShared 方法，该方法主要唤醒等待队列中的第一个等待节点（head.next），下面是具体实现：
+```java
+private void doReleaseShared() {
+    /*
+     * Ensure that a release propagates, even if there are other
+     * in-progress acquires/releases.  This proceeds in the usual
+     * way of trying to unparkSuccessor of head if it needs
+     * signal. But if it does not, status is set to PROPAGATE to
+     * ensure that upon release, propagation continues.
+     * Additionally, we must loop in case a new node is added
+     * while we are doing this. Also, unlike other uses of
+     * unparkSuccessor, we need to know if CAS to reset status
+     * fails, if so rechecking.
+     */
+    for (;;) {
+        Node h = head;
+        // head = null 说明没有初始化，head = tail 说明等待队列中没有等待节点
+        if (h != null && h != tail) {
+            // 查看当前节点的等待状态
+            int ws = h.waitStatus;
+            // 我们在前面说过，SIGNAL说明有后续节点需要唤醒
+            if (ws == Node.SIGNAL) {
+
+                /*
+                 * 将当前节点的值设为 0，表明已经唤醒了后继节点
+                 * 可能会有多个线程同时执行到这一步，所以使用 CAS 保证只有一个线程能修改成功，执行 unparkSuccessor，
+                 * 其他的线程会执行 continue 操作
+                 */
+                if (!compareAndSetWaitStatus(h, Node.SIGNAL, 0))
+                    continue; // loop to recheck cases
+                unparkSuccessor(h);
+            } else if (ws == 0 && !compareAndSetWaitStatus(h, 0, Node.PROPAGATE)) {
+                /*
+                 * ws 等于 0，说明无需唤醒后继结点（后续节点已经被唤醒或者当前节点没有被阻塞的后继结点），
+                 * 也就是这一次的调用其实并没有执行唤醒后继结点的操作。就类似于我只需要一张优惠券，
+                 * 但是我的两个朋友，他们分别给我了一张，因此我就剩余了一张。然后我就将这张剩余的优惠券
+                 * 送（传播）给其他人使用，因此这里将节点置为可传播的状态（PROPAGATE）
+                 */
+                continue; // loop on failed CAS
+            }
+        }
+        if (h == head) // loop if head changed
+            break;
+    }
+}
+```
+从上面的实现中，doReleaseShared 的主要作用是用来唤醒阻塞的节点并且一次只唤醒一个，它并不修改等待队列，如果有两个线程同时释放资源（这里假设 head 没有发生变化）或者说一个线程释放了多个资源，那么也就只有一个线程（假设这个线程只需要一个共享资源）被唤醒去竞争锁，而按照共享模型，这里应该要唤醒多个线程，以更好的利用共享资源。因此在共享模式下，当一个线程获取了共享锁之后，它会根据当前的系统资源，判断是否唤醒下一个线程。这与独占模式不同，独占模式只有在释放锁之后，才能唤醒等待的线程，而在共享模式中，获取锁和释放锁之后，都有可能唤醒等待的线程。
+
+**共享锁的获取**
+
+根据前面的内容，我们知道获取了共享锁之后，还可能需要唤醒后面的节点。在这里有一点需要注意：获取锁的逻辑是一致的，也就是只有节点的前继节点是 head ，才能去竞争锁。
+
+共享锁可能会是释放多个资源，那么就需要唤醒多个同步队列中的线程，如果随意的唤醒多个线程，那么同步队列就要崩了，根本没办法维护了，所以共享锁
+
+和独占锁不同，多个线程可以同时拥有共享锁，线程的数量受限于共享资源的数量，但共享资源只有一个时，其形式就表现为独占锁。通过 acquireShared 方法，我们可以申请共享锁，下面是 acquireShared 方法实现：
+```java
+public final void acquireShared(int arg) {
+    // 如果返回结果小于 0，证明没有获取到共享资源
+    if (tryAcquireShared(arg) < 0)
+        doAcquireShared(arg);
+}
+```
+当线程没有获得共享资源时，就需要执行 doAcquireShared 方法，下面是具体的实现：
+```java
+private void doAcquireShared(int arg) {
+    final Node node = addWaiter(Node.SHARED);
+    boolean failed = true;
+    try {
+        boolean interrupted = false;
+        for (;;) {
+            final Node p = node.predecessor();
+            if (p == head) {
+                int r = tryAcquireShared(arg);
+                if (r >= 0) {
+                    setHeadAndPropagate(node, r);
+                    p.next = null; // help GC
+                    if (interrupted)
+                        selfInterrupt();
+                    failed = false;
+                    return;
+                }
+            }
+            if (shouldParkAfterFailedAcquire(p, node) &&
+                parkAndCheckInterrupt())
+                interrupted = true;
+        }
+    } finally {
+        if (failed)
+            cancelAcquire(node);
+    }
+}
+```
+
+
 
 
 ## 参考文章
@@ -835,5 +958,5 @@ private void unparkSuccessor(Node node) {
 * http://www.infoq.com/cn/articles/jdk1.8-abstractqueuedsynchronizer
 * https://my.oschina.net/xianggao/blog/532709
 * http://www.javarticles.com/2012/10/abstractqueuedsynchronizer-aqs.html
-
+* http://www.mamicode.com/info-detail-5918.html
 <!--email_off-->
