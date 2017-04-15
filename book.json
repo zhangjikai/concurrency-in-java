@@ -17,7 +17,7 @@
         "-highlight",
         "-livereload",
         "search-plus@^0.0.11",
-        "simple-page-toc@^0.1.1",
+        "simple-page-toc@0.1.1",
         "github@^2.0.0",
         "edit-link@^2.0.2",
         "prism@^2.1.0",
@@ -29,7 +29,9 @@
         "sitemap-general@^0.1.1",
         "anchor-navigation-ex@0.1.8",
         "favicon@^0.0.2",
-        "3-ba@^0.9.0"
+        "3-ba@^0.9.0",
+        "fancybox"
+
     ],
     "pluginsConfig": {
         "theme-default": {
