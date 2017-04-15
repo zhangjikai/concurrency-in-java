@@ -663,11 +663,11 @@ public final void acquire(int arg) {
     }
 }
 ```
-acquire 会首先调用 tryAcquire 方法来获得锁，这个方法需要我们来实现，这个在前面已经提过了。如果没有获取锁，会调用 addWaiter 方法会创建一个和当前线程关联的节点追加到等待队列的尾部，我们调用 addWaiter 时传入的是 Node.EXCLUSIVE，表明当前是独占模式。下面是 addWaiter 的具体实现
+acquire 会首先调用 tryAcquire 方法来获得锁，这个方法需要我们来实现，这个在前面已经提过了。如果没有获取锁，会调用 addWaiter 方法会创建一个和当前线程关联的节点追加到同步队列的尾部，我们调用 addWaiter 时传入的是 Node.EXCLUSIVE，表明当前是独占模式。下面是 addWaiter 的具体实现
 ```java
 private Node addWaiter(Node mode) {
     Node node = new Node(Thread.currentThread(), mode);
-    // tail 指向等待队列的尾节点
+    // tail 指向同步队列的尾节点
     Node pred = tail;
     // Try the fast path of enq; backup to full enq on failure
     if (pred != null) {
@@ -702,7 +702,7 @@ private Node enq(final Node node) {
     }
 }
 ```
-addWaiter 仅仅是将节点加到了等待队列的末尾，并没有阻塞线程，线程阻塞的操作是在 acquireQueued 方法中完成的，下面是 acquireQueued 的实现：
+addWaiter 仅仅是将节点加到了同步队列的末尾，并没有阻塞线程，线程阻塞的操作是在 acquireQueued 方法中完成的，下面是 acquireQueued 的实现：
 ```java
 final boolean acquireQueued(final Node node, int arg) {
     boolean failed = true;
@@ -823,7 +823,7 @@ private void unparkSuccessor(Node node) {
 
 ### 共享锁获取和释放
 
-独占锁的原理比较容易理解，但是共享锁就有点绕了。在共享模式下，线程获取不到锁时，和独占模式的处理一样，首先为获取不到锁的线程创建一个节点，放到等待队列的尾部，然后检查当前节点的前继节点是否为 head，如果是 head，就尝试获取锁，如果获取不到锁，然后进入是否需要挂起的逻辑中，前面这些和独占锁的处理类似，但是当等待队列中的节点获得了共享锁之后，处理方式有很大的不同。当等待队列中的节点获取了共享锁之后，处理方式有很大的不同。如果想要理清共享锁的工作过程，必须将共享锁的获取和释放结合起来看。所以这里我们先看下共享锁的释放过程，只有明白了释放过程都做了哪些工作，才能更好的理解获取锁的过程。
+独占锁的流程和原理比较容易理解，因为只有一个锁，但是共享锁的处理将相对复杂一些了。在独占锁中，只有在释放锁之后，才能唤醒等待的线程，而在共享模式中，获取锁和释放锁之后，都有可能唤醒等待的线程。如果想要理清共享锁的工作过程，必须将共享锁的获取和释放结合起来看。这里我们先看一下共享锁的释放过程，只有明白了释放过程做了哪些工作，才能更好的理解获取锁的过程。
 
 **共享锁释放**
 
@@ -850,7 +850,7 @@ protected boolean tryReleaseShared(int releases) {
     }
 }
 ```
-当共享资源数量修改了之后，会调用 doReleaseShared 方法，该方法主要唤醒等待队列中的第一个等待节点（head.next），下面是具体实现：
+当共享资源数量修改了之后，会调用 doReleaseShared 方法，该方法主要唤醒同步队列中的第一个等待节点（head.next），下面是具体实现：
 ```java
 private void doReleaseShared() {
     /*
@@ -866,7 +866,7 @@ private void doReleaseShared() {
      */
     for (;;) {
         Node h = head;
-        // head = null 说明没有初始化，head = tail 说明等待队列中没有等待节点
+        // head = null 说明没有初始化，head = tail 说明同步队列中没有等待节点
         if (h != null && h != tail) {
             // 查看当前节点的等待状态
             int ws = h.waitStatus;
@@ -875,8 +875,8 @@ private void doReleaseShared() {
 
                 /*
                  * 将当前节点的值设为 0，表明已经唤醒了后继节点
-                 * 可能会有多个线程同时执行到这一步，所以使用 CAS 保证只有一个线程能修改成功，执行 unparkSuccessor，
-                 * 其他的线程会执行 continue 操作
+                 * 可能会有多个线程同时执行到这一步，所以使用 CAS 保证只有一个线程能修改成功，
+                 * 执行 unparkSuccessor，其他的线程会执行 continue 操作
                  */
                 if (!compareAndSetWaitStatus(h, Node.SIGNAL, 0))
                     continue; // loop to recheck cases
@@ -896,15 +896,17 @@ private void doReleaseShared() {
     }
 }
 ```
-从上面的实现中，doReleaseShared 的主要作用是用来唤醒阻塞的节点并且一次只唤醒一个，它并不修改等待队列，如果有两个线程同时释放资源（这里假设 head 没有发生变化）或者说一个线程释放了多个资源，那么也就只有一个线程（假设这个线程只需要一个共享资源）被唤醒去竞争锁，而按照共享模型，这里应该要唤醒多个线程，以更好的利用共享资源。因此在共享模式下，当一个线程获取了共享锁之后，它会根据当前的系统资源，判断是否唤醒下一个线程。这与独占模式不同，独占模式只有在释放锁之后，才能唤醒等待的线程，而在共享模式中，获取锁和释放锁之后，都有可能唤醒等待的线程。
+从上面的实现中，doReleaseShared 的主要作用是用来唤醒阻塞的节点并且一次只唤醒一个，让该节点关联的线程去重新竞争锁，它既不修改同步队列，也不修改共享资源。
+
+当多个线程同时释放资源时，可以确保两件事：
+1. 共享资源的数量能正确的累加
+2. 至少有一个线程被唤醒，其实只要确保有一个线程被唤醒就可以了，即便唤醒了多个线程，在同一时刻，也只能有一个线程能得到竞争锁的资源，在下面我们会看到。
+
+所以释放锁做的主要工作还是修改共享资源的数量。而有了多个共享资源后，如何确保同步队列中的多个节点可以获取锁，是由获取锁的逻辑完成，下面看下共享锁的获取。
 
 **共享锁的获取**
 
-根据前面的内容，我们知道获取了共享锁之后，还可能需要唤醒后面的节点。在这里有一点需要注意：获取锁的逻辑是一致的，也就是只有节点的前继节点是 head ，才能去竞争锁。
-
-共享锁可能会是释放多个资源，那么就需要唤醒多个同步队列中的线程，如果随意的唤醒多个线程，那么同步队列就要崩了，根本没办法维护了，所以共享锁
-
-和独占锁不同，多个线程可以同时拥有共享锁，线程的数量受限于共享资源的数量，但共享资源只有一个时，其形式就表现为独占锁。通过 acquireShared 方法，我们可以申请共享锁，下面是 acquireShared 方法实现：
+根据前面的内容，我们知道获取了共享锁之后，还可能需要唤醒后面的节点。下面看下具体的实现，通过 acquireShared 方法，我们可以申请共享锁，下面是具体的实现：
 ```java
 public final void acquireShared(int arg) {
     // 如果返回结果小于 0，证明没有获取到共享资源
@@ -912,7 +914,7 @@ public final void acquireShared(int arg) {
         doAcquireShared(arg);
 }
 ```
-当线程没有获得共享资源时，就需要执行 doAcquireShared 方法，下面是具体的实现：
+如果没有获取到共享资源，就会执行 doAcquireShared 方法，下面是该方法的具体实现：
 ```java
 private void doAcquireShared(int arg) {
     final Node node = addWaiter(Node.SHARED);
@@ -942,8 +944,52 @@ private void doAcquireShared(int arg) {
     }
 }
 ```
+从上面的代码中可以看到，只有前置节点为 head 的节点才有可能去竞争锁，这点和独占模式的处理是一样的，所以即便唤醒了多个线程，也只有一个线程能进入竞争锁的逻辑，其余锁会再次进入 park 状态，获取当线程获取到共享锁之后，会执行 setHeadAndPropagate 方法，下面是具体的实现：
+```java
+private void setHeadAndPropagate(Node node, long propagate) {
+    // 备份一下头节点
+    Node h = head; // Record old head for check below
+    /*
+     * 移除头节点，并将当前节点置为头节点
+     * 当执行完这一步之后，其实队列的头节点已经发生改变，
+     * 其他被唤醒的线程就有机会去获取锁，从而并发的执行该方法，
+     * 所以上面备份头节点，以便下面的代码可以正确运行
+     */
+    setHead(node);
 
+    /*
+     * Try to signal next queued node if:
+     *   Propagation was indicated by caller,
+     *     or was recorded (as h.waitStatus either before
+     *     or after setHead) by a previous operation
+     *     (note: this uses sign-check of waitStatus because
+     *      PROPAGATE status may transition to SIGNAL.)
+     * and
+     *   The next node is waiting in shared mode,
+     *     or we don't know, because it appears null
+     *
+     * The conservatism in both of these checks may cause
+     * unnecessary wake-ups, but only when there are multiple
+     * racing acquires/releases, so most need signals now or soon
+     * anyway.
+     */
 
+     /*
+      * 判断是否需要唤醒后继结点，propagate > 0 说明共享资源有剩余，
+      * h.waitStatus < 0，表明当前节点状态可能为 SIGNAL，CONDITION，PROPAGATE
+      */
+    if (propagate > 0 || h == null || h.waitStatus < 0 ||
+        (h = head) == null || h.waitStatus < 0) {
+        Node s = node.next;
+        // 只有 s 不处于独占模式时，才去唤醒后继结点
+        if (s == null || s.isShared())
+            doReleaseShared();
+    }
+}
+```
+判断后继结点是否需要唤醒的条件是十分宽松的，也就是一定包含必要的唤醒，但是也有可能会包含不必要的唤醒。从前面我们可以知道 doReleaseShared 函数的主要作用是唤醒后继结点，它既不修改共享资源，也不修改同步队列，所以即便有不必要的唤醒也是不响应程序正确性的，如果没有共享资源，节点会再次进入等待状态。
+
+到了这里，脉络就比较清晰了，当一个节点获取到共享锁之后，它除了将自身设为 head 节点之外，还会判断一下是否满足唤醒后继结点的条件，如果满足，就唤醒后继结点，后继结点获取到锁之后，会重复这个过程，直到判断条件不成立。就类似于考试时从第一排往最后一排从卷子一样，第一排先留下一份，然后将剩余的传给后一排，后一排会重复这个过程。如果传到某一排卷子没了，那么位于这排的人就要等待，知道老师又给了他新的卷子。
 
 
 ## 参考文章
