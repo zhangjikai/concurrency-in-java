@@ -24,7 +24,8 @@
         "prism-themes@^0.0.2",
         "anchors@^0.7.1",
         "-expandable-chapters-small@^0.1.7",
-        "duoshuo",
+        "-duoshuo",
+        "disqus",
         "3-ba",
         "sitemap-general@^0.1.1",
         "anchor-navigation-ex@0.1.8",
@@ -95,6 +96,9 @@
         "favicon": {
             "shortcut": "favicon.ico",
             "bookmark": "favicon.ico"
+        },
+        "disqus": {
+            "shortName": "blog-aclemypgmr"
         }
     }
 }
