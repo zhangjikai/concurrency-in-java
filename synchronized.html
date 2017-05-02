@@ -1,0 +1,500 @@
+
+<!DOCTYPE HTML>
+<html lang="zh-hans" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>synchronized · Java 并发编程</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        <meta name="author" content="zhangjikai">
+        
+        
+    
+    <link rel="stylesheet" href="gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-search-plus/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-prism/prism-base16-ateliersulphurpool.light.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-anchors/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-disqus/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-anchor-navigation-ex/style/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-fancybox/jquery.fancybox.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-fancybox/jquery.fancybox-buttons.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+        <link rel="stylesheet" href="styles/website.css">
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="显式锁.html" />
+    
+    
+    <link rel="prev" href="ThreadLocal.html" />
+    
+
+    
+        <link rel="shortcut icon" href='favicon.ico' type="image/x-icon">
+    
+    
+        <link rel="bookmark" href='favicon.ico' type="image/x-icon">
+    
+    
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="输入并搜索" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+    
+        
+        <li>
+            <a href="http://www.zhangjikai.com" target="_blank" class="custom-link">Home</a>
+        </li>
+    
+    
+
+    
+    <li class="divider"></li>
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="./">
+            
+                <a href="./">
+            
+                    
+                        <b>1.1.</b>
+                    
+                    前言
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="并发基础.html">
+            
+                <a href="并发基础.html">
+            
+                    
+                        <b>1.2.</b>
+                    
+                    并发编程基础
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="线程.html">
+            
+                <a href="线程.html">
+            
+                    
+                        <b>1.2.1.</b>
+                    
+                    线程
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="ThreadLocal.html">
+            
+                <a href="ThreadLocal.html">
+            
+                    
+                        <b>1.2.2.</b>
+                    
+                    ThreadLocal
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.2.3" data-path="synchronized.html">
+            
+                <a href="synchronized.html">
+            
+                    
+                        <b>1.2.3.</b>
+                    
+                    synchronized
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="显式锁.html">
+            
+                <a href="显式锁.html">
+            
+                    
+                        <b>1.3.</b>
+                    
+                    显式锁
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="Lock框架.html">
+            
+                <a href="Lock框架.html">
+            
+                    
+                        <b>1.3.1.</b>
+                    
+                    Lock 框架
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="AbstractQueuedSynchronizer.html">
+            
+                <a href="AbstractQueuedSynchronizer.html">
+            
+                    
+                        <b>1.3.2.</b>
+                    
+                    AbstractQueuedSynchronizer
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="线程池.html">
+            
+                <a href="线程池.html">
+            
+                    
+                        <b>1.4.</b>
+                    
+                    线程池
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="ThreadPoolExecutor.html">
+            
+                <a href="ThreadPoolExecutor.html">
+            
+                    
+                        <b>1.4.1.</b>
+                    
+                    ThreadPoolExecutor
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            本书使用 GitBook 发布
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="." >synchronized</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <div id="anchor-navigation-ex-navbar"><i class="fa fa-anchor"></i><ul><li><a href="#synchronized">synchronized</a></li><ul><li><a href="#&#x57FA;&#x7840;">&#x57FA;&#x7840;</a></li></ul></ul></div><a href="#synchronized" id="anchorNavigationExGoTop"><i class="fa fa-arrow-up"></i></a><h1 id="synchronized"><a name="synchronized" class="anchor-navigation-ex-anchor" href="#synchronized"><i class="fa fa-link" aria-hidden="true"></i></a>synchronized</h1>
+<p>synchronized &#x662F;&#x6700;&#x5E38;&#x7528;&#x7684;&#x5B9E;&#x73B0;&#x540C;&#x6B65;&#x7684;&#x624B;&#x6BB5;&#xFF0C;&#x5728; Java SE 1.6 &#x4EE5;&#x53CA;&#x4E4B;&#x540E;&#x7684;&#x7248;&#x672C;&#xFF0C;&#x5BF9; synchronized &#x8FDB;&#x884C;&#x4E86;&#x4F18;&#x5316;&#xFF0C;&#x4F7F; synchronized &#x6574;&#x4F53;&#x7684;&#x6027;&#x80FD;&#x5F97;&#x5230;&#x4E86;&#x5F88;&#x5927;&#x7684;&#x63D0;&#x5347;&#xFF0C;&#x4E0B;&#x9762;&#x770B;&#x4E0B; synchronized &#x7684;&#x76F8;&#x5173;&#x5B9E;&#x73B0;&#x3002;</p>
+<h2 id="&#x57FA;&#x7840;"><a name="&#x57FA;&#x7840;" class="anchor-navigation-ex-anchor" href="#&#x57FA;&#x7840;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x57FA;&#x7840;</h2>
+<p>&#x4E0B;&#x9762;&#x662F;&#x4E00;&#x4E2A;&#x57FA;&#x672C;&#x7684;&#x4F7F;&#x7528;&#x793A;&#x4F8B;&#xFF1A;</p>
+<pre class="language-"><code class="lang-java"><span class="token keyword">import</span> java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span>ExecutorService<span class="token punctuation">;</span>
+<span class="token keyword">import</span> java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span>Executors<span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">/**
+ * Created by Jikai Zhang on 2017/5/2.
+ */</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">SynchronizedTest</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">int</span> counter <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">synchronized</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">increase</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10000</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            counter<span class="token operator">++</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        ExecutorService executor <span class="token operator">=</span> Executors<span class="token punctuation">.</span><span class="token function">newFixedThreadPool</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">;</span> i <span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            executor<span class="token punctuation">.</span><span class="token function">execute</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Runnable</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token annotation punctuation">@Override</span>
+                <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">run</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token function">increase</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        executor<span class="token punctuation">.</span><span class="token function">shutdown</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token operator">!</span>executor<span class="token punctuation">.</span><span class="token function">isTerminated</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>counter<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>synchronized &#x4EE3;&#x7801;&#x6267;&#x884C;&#x4E4B;&#x524D;&#xFF0C;&#x8981;&#x9996;&#x5148;&#x9501;&#x4F4F;&#x4E00;&#x4E2A;&#x5BF9;&#x8C61;&#xFF0C;&#x5177;&#x4F53;&#x4E3A;&#x4E0B;&#x9762;&#x4E09;&#x79CD;&#x60C5;&#x51B5;&#xFF1A;</p>
+<ul>
+<li>&#x5BF9;&#x4E8E;&#x666E;&#x901A;&#x65B9;&#x6CD5;&#xFF08;&#x975E;&#x9759;&#x6001;&#xFF09;&#x65B9;&#x6CD5;&#xFF0C;&#x9501;&#x4F4F;&#x7684;&#x662F;&#x5F53;&#x524D;&#x5B9E;&#x4F8B;&#x5BF9;&#x8C61;</li>
+<li>&#x5BF9;&#x4E8E;&#x9759;&#x6001;&#x65B9;&#x6CD5;&#xFF0C;&#x9501;&#x4F4F;&#x662F;&#x5F53;&#x524D;&#x7C7B;&#x7684; Class &#x5BF9;&#x8C61;</li>
+<li>&#x5BF9;&#x4E8E;&#x540C;&#x6B65;&#x65B9;&#x6CD5;&#x5757;&#xFF0C;&#x9501;&#x4F4F;&#x7684;&#x662F; synchronized &#x62EC;&#x53F7;&#x4E2D;&#x914D;&#x7F6E;&#x7684;&#x5BF9;&#x8C61;&#x3002;</li>
+</ul>
+<p>synchronized &#x5173;&#x952E;&#x5B57;&#x7ECF;&#x8FC7;&#x7F16;&#x8BD1;&#x4E4B;&#x540E;&#xFF0C;&#x4F1A;&#x5728;&#x540C;&#x6B65;&#x5757;&#x7684;&#x524D;&#x540E;&#x5206;&#x522B;&#x5F62;&#x6210; monitorenter &#x548C; monitorexit &#x8FD9;&#x4E24;&#x4E2A;&#x5B57;&#x8282;&#x7801;&#x6307;&#x4EE4;&#xFF0C;&#x8FD9;&#x4E24;&#x6761;&#x6307;&#x4EE4;&#x90FD;&#x9700;&#x8981;&#x4E00;&#x4E2A; reference &#x7C7B;&#x578B;&#x7684;&#x53C2;&#x6570;&#x6765;&#x6307;&#x660E;&#x8981;&#x9501;&#x5B9A;&#x548C;&#x89E3;&#x9501;&#x7684;&#x5BF9;&#x8C61;&#x3002;&#x5F53;&#x6267;&#x884C; monitorenter &#x6307;&#x4EE4;&#x65F6;&#xFF0C;&#x4F1A;&#x9996;&#x5148;&#x5C1D;&#x8BD5;&#x83B7;&#x53D6;&#x5BF9;&#x8C61;&#x7684;&#x9501;&#xFF0C;&#x5982;&#x679C;&#x5BF9;&#x8C61;&#x6CA1;&#x88AB;&#x9501;&#x5B9A;&#xFF0C;&#x6216;&#x8005;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x5DF2;&#x7ECF;&#x62E5;&#x6709;&#x4E86;&#x90A3;&#x4E2A;&#x5BF9;&#x8C61;&#x7684;&#x9501;&#xFF0C;&#x5C31;&#x628A;&#x9501;&#x7684;&#x8BA1;&#x6570;&#x5668;&#x52A0; 1&#xFF0C;&#x76F8;&#x5E94;&#x7684;&#xFF0C;&#x5728;&#x6267;&#x884C; monitorexit &#x6307;&#x4EE4;&#x65F6;&#x4F1A;&#x5C06;&#x9501;&#x7684;&#x8BA1;&#x6570;&#x5668;&#x51CF; 1&#xFF0C;&#x5F53;&#x8BA1;&#x6570;&#x5668;&#x4E3A; 0 &#x65F6;&#xFF0C;&#x9501;&#x5C31;&#x4F1A;&#x88AB;&#x91CA;&#x653E;&#x3002;&#x82E5;&#x679C;&#x83B7;&#x53D6;&#x9501;&#x5931;&#x8D25;&#xFF0C;&#x90A3;&#x4E48;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x5C31;&#x8981;&#x8FDB;&#x5165;&#x963B;&#x585E;&#x72B6;&#x6001;&#xFF0C;&#x76F4;&#x5230;&#x53E6;&#x5916;&#x4E00;&#x4E2A;&#x7EBF;&#x7A0B;&#x91CA;&#x653E;&#x9501;&#x3002;</p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="ThreadLocal.html" class="navigation navigation-prev " aria-label="Previous page: ThreadLocal">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="显式锁.html" class="navigation navigation-next " aria-label="Next page: 显式锁">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"synchronized","level":"1.2.3","depth":2,"next":{"title":"显式锁","level":"1.3","depth":1,"path":"显式锁.md","ref":"显式锁.md","articles":[{"title":"Lock 框架","level":"1.3.1","depth":2,"path":"Lock框架.md","ref":"Lock框架.md","articles":[]},{"title":"AbstractQueuedSynchronizer","level":"1.3.2","depth":2,"path":"AbstractQueuedSynchronizer.md","ref":"AbstractQueuedSynchronizer.md","articles":[]}]},"previous":{"title":"ThreadLocal","level":"1.2.2","depth":2,"path":"ThreadLocal.md","ref":"ThreadLocal.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-lunr","-search","-highlight","-livereload","search-plus@^0.0.11","simple-page-toc@0.1.1","github@^2.0.0","edit-link@^2.0.2","prism@^2.1.0","prism-themes@^0.0.2","anchors@^0.7.1","-expandable-chapters-small@^0.1.7","-duoshuo","disqus","3-ba","sitemap-general@^0.1.1","anchor-navigation-ex@0.1.8","favicon@^0.0.2","3-ba@^0.9.0","fancybox"],"root":".","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prism-themes/themes/prism-base16-ateliersulphurpool.light.css"]},"disqus":{"useIdentifier":false,"shortName":"book-2"},"fancybox":{"helpers":{"buttons":{}}},"github":{"url":"https://github.com/zhangjikai/concurrency-in-java"},"simple-page-toc":{"maxDepth":4,"skipFirstH1":true},"duoshuo":{"short_name":"zhangjkblog","theme":"default"},"donate":{"wechat":"https://zhangjikai.com/resource/weixin.png","alipay":"https://zhangjikai.com/resource/alipay.png","title":"","button":"赏","alipayText":"支付宝打赏","wechatText":"微信打赏"},"sitemap-general":{"prefix":"http://con.zhangjikai.com"},"fontsettings":{"theme":"white","family":"sans","size":2},"anchor-navigation-ex":{"isRewritePageTitle":false,"tocLevel1Icon":"fa fa-hand-o-right","tocLevel2Icon":"fa fa-hand-o-right","tocLevel3Icon":"fa fa-hand-o-right"},"favicon":{"shortcut":"favicon.ico","bookmark":"favicon.ico"},"prism-themes":{},"3-ba":{"configuration":"auto","token":"ff100361cdce95dd4c8fb96b4009f7bc"},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":true,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"label":"Edit This Page","base":"https://github.com/zhangjikai/concurrency-in-java/edit/master"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true},"anchors":{},"search-plus":{}},"theme":"default","author":"zhangjikai","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Java 并发编程","language":"zh-hans","output.name":"site","links":{"sidebar":{"Home":"http://www.zhangjikai.com"}},"gitbook":"3.2.2","description":"Java 并发编程学习笔记"},"file":{"path":"synchronized.md","mtime":"2017-05-02T08:14:53.324Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-05-02T08:17:17.974Z"},"basePath":".","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="gitbook/gitbook.js"></script>
+    <script src="gitbook/theme.js"></script>
+    
+        
+        <script src="gitbook/gitbook-plugin-search-plus/jquery.mark.min.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search-plus/search.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-github/plugin.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-edit-link/plugin.js"></script>
+        
+    
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/URI.js/1.16.1/URI.min.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-disqus/plugin.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-3-ba/plugin.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-fancybox/jquery.min.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-fancybox/jquery.mousewheel.pack.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-fancybox/jquery.fancybox.pack.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-fancybox/jquery.fancybox-buttons.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-fancybox/plugin.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+
